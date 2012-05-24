@@ -1,0 +1,1 @@
+{"settings":{"server":{"localhost":{"MySQL":{"login":"root","password":"","server":"","dbname":""},"Lockdown":{"login":"","password":"","redirect":""},"Twig":{"cache":"off"}},"dev":{"MySQL":{"login":" ","password":"","server":"","dbname":""},"Lockdown":{"login":"","password":"","redirect":""},"Twig":{"cache":"off"}}},"client":[]}}

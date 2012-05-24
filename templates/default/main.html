@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		
+		<meta property="og:title" content="New Node Website"/>
+		<meta property="og:type" content="non_profit"/>
+		<meta property="og:locale" content="en_US"/>
+		<meta property="og:url" content="{$conf.settings.base}"/>
+		<meta property="og:image" content="{$conf.settings.base}misc/images/ogimg.jpg"/>
+		<meta property="og:site_name" content="New Node Website"/>
+		<meta property="fb:admins" content="726140583"/>
+		<meta property="og:description" content=""/>
+		
+		<base href="{$conf.settings.base}" />
+		
+		<title>Sitegen Home</title>
+		{{ for type,include in includes }}
+			{{ for file in include }}
+				{{ if type == "js" }}
+					<script type="text/javascript" src="{$file}"></script>
+				{{ else }}
+					<link href="{$file}" rel="stylesheet" type="text/css" />
+				{{ endif }}
+			{{ endfor }}
+		{{ endfor }}
+		
+	</head>
+	<body>
+		<header>
+			<div class="container_12">
+				<div class="grid_12">
+					<img class="logo" src="templates/default/images/logo.png" />
+				</div>
+			</div>
+		</header>
+		<div class="main">
+					
+			{{ autoescape false }}
+			{$output}
+			{{ endautoescape }}
+					
+		</div>
+		<footer>
+			<div class="container_12">
+				<div class="grid_12">
+					...
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
+
+
+<script type="text/javascript">
+	
+</script>

@@ -1,0 +1,95 @@
+<div class="container_12">
+	<div class="grid_12">
+		<h1>{$install.meta.name}</h1>
+	</div>
+	<div class="grid_6">
+		<h2>Installation en cours</h2>
+		<p>Les fichiers ont &eacute;t&eacute; copi&eacute;s avec succ&egrave;s.</p>
+		{{ if install.activate }}
+			{{ if install.activate.template }}
+				<table class="light">
+					<tbody>
+						{{ for tid in install.activate.template }}
+							<tr>
+								<td>
+									{$tid}
+								</td>
+								<td width="60" style="text-align:right">
+									<button class="button small">Activer</button>
+								</td>
+							</tr>
+						{{ endfor }}
+					</tbody>
+				</table>
+			{{ endif }}
+		{{ endif }}
+		{{ if install.installScript }}
+			<form action="{$install.installScript}" method="post">
+				<input type="submit" value="Terminer l'installation" class="small button" />
+			</form>
+		{{ endif }}
+	</div>
+	<div class="grid_6">
+		<h2>Meta</h2>
+		<table class="light">
+			<tbody>
+				<tr>
+					<td>
+						Auteur
+					</td>
+					<td>
+						{$install.meta.author}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Version
+					</td>
+					<td>
+						{$install.meta.version}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Contact
+					</td>
+					<td>
+						{$install.meta.contact}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Website
+					</td>
+					<td>
+						{$install.meta.website}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h2>Contributeurs</h2>
+		<table class="light">
+			<tbody>
+				{{ for role,contributors in install.meta.contributors }}
+				<tr>
+					<td>
+						{$role}
+					</td>
+					<td>
+						{{ for name in contributors }}
+						{$name}<br />
+						{{ endfor }}
+					</td>
+				</tr>
+				{{ else }}
+				<tr>
+					<td>
+						No contributors
+					</td>
+				</tr>
+				{{ endfor }}
+			</tbody>
+		</table>
+	</div>
+</div>

@@ -1,0 +1,3 @@
+<?php
+	$_CLIENTSIDELIBS = array();
+?>
