@@ -478,6 +478,7 @@ AddCharset utf-8 .html .css .js .xml .json .rss
 	Options +FollowSymLinks
 	
 	# default index app
+	RewriteRule ^$ 													index.php?mode=web&app=index&module=index [L]
 	RewriteRule ^([\/])$  											index.php?mode=web&app=index&module=index [L]
 	RewriteRule ^(.*)\.conf$  										core/default/error/index.php?error=403 [L]
 	
