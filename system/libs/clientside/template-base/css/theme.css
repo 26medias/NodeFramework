@@ -424,3 +424,35 @@ div.message.info {
 	background-color:	#d1e4f3;
 	border:				1px solid #99c4ea;
 }
+
+form > .row {
+	background-color:	#fafafa;
+	padding:			4px;
+	border-top: 		1px solid #E7E7E7;
+	clear: 				both;
+	padding: 			10px 16px;
+	position: 			relative;
+	font-size:			12px;
+	font-weight:		bold;
+}
+form > .row > label {
+	width: 				14%;
+	display: 			block;
+	float: 				left;
+	margin-right: 		15px;
+	color:				#404040;
+	padding:			5px 0;
+}
+form > .row > .form-right {
+	float: 				right;
+	width: 				76%;
+}
+form > .row > .form-right > input, form > .row > .form-right > select {
+	-moz-box-sizing: border-box;
+	background: none repeat scroll 0 0 #FFFFFF;
+	border: 1px solid #D5D5D5;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 11px;
+	padding: 5px;
+	width: 100%;
+}

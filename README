@@ -1,0 +1,44 @@
+h1. Installation
+	*Décompressez dans votre repertoire web
+	*Connectez vous sur /worker/conf. Exemple si vous avez installez dans http://site.com/, alors connectez vous sur http://site.com/worker/conf
+	*En haut, "Base url" -> URL du site (exemple: http://site;com/). N'oubliez pas le "/" final!
+	* Cochez la lib "Twig" (Moteur de template)
+	*Cochez la lib "Templates" (template helpers)
+	*Validez (bouton "Update")
+	*Votre Node est installé.
+
+h1. Templates
+Le template se trouve dans /templates/.
+Les fichiers CSS et JS du template sont une librairie Clientside.
+Ils doivent donc etre packagés comme une librairie et se situer dans le dossier /system/libs/clentside/
+Le nom de la librairie doit etre "template-[nom du template]". Exemple, si votre template s'appel "Helloworld", alors la librairie doit etre nommé "template-Helloworld".
+Si cette convention de nommage n'est pas respectée, cette librairie ne sera pas chargée automatiquement.
+
+h2. Class CSS requises dans les templates:
+	*Form*
+		form>div.row>label+div.form-right
+	
+	*Buttons*
+		*.button
+		*.button-cta
+		*.big
+		*.small
+		
+	*Tables*
+		*table
+		*table.data
+	
+	*Messages*
+		*div.message.warn>p
+		*div.message.error>p
+		*div.message.confirm>p
+		*div.message.info>p
+	
+	*Pagination*
+		*ul.pagination>li>a
+		*ul.pagination>li.prev>a
+		*ul.pagination>li.next>a
+		*ul.pagination>li.active>a
+	
+	*Content Box*
+		*div.box>div.head+div.body
