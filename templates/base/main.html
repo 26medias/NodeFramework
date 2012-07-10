@@ -2,19 +2,23 @@
 	<head>
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 		
-		<meta property="og:title" content="New Node Website"/>
+		<!-- Open-Graph Protocol (http://ogp.me/) -->
+		<meta property="og:title" content="Mon site"/>
 		<meta property="og:type" content="non_profit"/>
-		<meta property="og:locale" content="en_US"/>
+		<meta property="og:locale" content="fr_FR"/>
 		<meta property="og:url" content="{$conf.settings.base}"/>
 		<meta property="og:image" content="{$conf.settings.base}misc/images/ogimg.jpg"/>
-		<meta property="og:site_name" content="New Node Website"/>
-		<meta property="fb:admins" content="726140583"/>
+		<meta property="og:site_name" content="Mon site"/>
+		<meta property="fb:admins" content=""/>
 		<meta property="og:description" content=""/>
 		
+		<!-- Url de base -->
 		<base href="{$conf.settings.base}" />
 		
-		<title>Sitegen Home</title>
 		
+		<title>Mon site</title>
+		
+		<!-- JS et CSS à charger -->
 		{{ for type,include in includes }}
 			{{ for file in include }}
 				{{ if type == "js" }}
@@ -30,26 +34,35 @@
 		<header>
 			<div class="container_12">
 				<div class="grid_12">
-					<img class="logo" src="templates/gray/images/logo.png" />
+					<img class="logo" src="templates/base/images/logo.png" />
+					<ul class="menu">
+						<li><a href="#">Home</a></li>
+						<li><a href="#">About</a></li>
+						<li><a href="#">Contact</a></li>
+					</ul>
 				</div>
 			</div>
 		</header>
-		<div class="menu">
+		<div class="lineseparator"></div>
+		<div class="pagetitle">
 			<div class="container_12">
 				<div class="grid_12">
-					<ul class="menu">
-						<li><a href="index">Homepage</a></li>
-					</ul>
+					{{ if shared.template.hastitle }}
+						{$shared.template.title}
+					{{endif }}
 				</div>
 			</div>
 		</div>
 		<div class="main">
-					
+			
+			<!-- Contenu de la page -->
 			{{ autoescape false }}
 			{$output}
 			{{ endautoescape }}
 					
 		</div>
+		
+		<div class="lineseparator"></div>
 		<footer>
 			<div class="container_12">
 				<div class="grid_12">
