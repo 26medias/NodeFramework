@@ -1,6 +1,8 @@
 <?php
 	$p = params();
 	
+	tpl_setPageTitle("test");
+	
 	render(array(
 		"require"	=> array(),
 		"dir"		=> $p["__here__"],
