@@ -91,17 +91,17 @@
 			foreach ($_CLIENTSIDELIBS[$_ID]["files"]["js"] as $file) {
 				$expl = explode("http://",$file);
 				if (count($expl) === 1) {
-					$bufferjs .= JSMin::minify(file_get($file));
+					$bufferjs .= "/**".$file."**/\n".JSMin::minify(file_get($file)).";;\n\n\n";
 				} else {
-					$bufferjs .= JSMin::minify(file_get("http://".$expl[1]));
+					$bufferjs .= "/**".$file."**/\n".JSMin::minify(file_get("http://".$expl[1])).";;\n\n\n";
 				}
 			}
 			foreach ($_CLIENTSIDELIBS[$_ID]["files"]["css"] as $file) {
 				$expl = explode("http://",$file);
 				if (count($expl) === 1) {
-					$buffercss .= CssMin::minify(system_updateCssPaths($file, $PUBLISH_IMAGES, $PUBLISH_IMAGES_REL));
+					$buffercss .= "/**".$file."**/\n".CssMin::minify(system_updateCssPaths($file, $PUBLISH_IMAGES, $PUBLISH_IMAGES_REL))."\n\n\n";
 				} else {
-					$buffercss .= CssMin::minify(system_updateCssPaths("http://".$expl[1], $PUBLISH_IMAGES, $PUBLISH_IMAGES_REL));
+					$buffercss .= "/**".$file."**/\n".CssMin::minify(system_updateCssPaths("http://".$expl[1], $PUBLISH_IMAGES, $PUBLISH_IMAGES_REL))."\n\n\n";
 				}
 			}
 			
@@ -532,19 +532,6 @@
 		file_put_contents($cache_clientside_libs, json_encode($clientsideLibs));
 	}
 	
-	function system_setTemplate($id) {
-		global $_CONF;
-		$here							= "core/compiled/php/";
-		$conf_file						= $here."conf.php";
-		$cache_settings					= $here."cache_settings.json";
-		$_CONF["template"]				= $id;
-		$settings						= json_decode(file_get($cache_settings),true);
-		$settings["template"]			= $id;
-		
-		file_put_contents($conf_file, 		"<?php\n\t\$_CONF=".array_to_phpArray($_CONF).";\n?>");
-		file_put_contents($cache_settings, 	json_encode($settings));
-	}
-	
 	
 	function system_uncompressPackedFile($source) {
 		global $_CONF;
@@ -566,6 +553,22 @@
 		}
 		
 		return $tempPath;
+	}
+	
+	function system_uncompressLocalPackedFile($source) {
+		global $_CONF;
+		
+		$info = pathinfo($source);
+		$path = $info["dirname"]."/".$info["filename"]."/";
+		mkdir($path);
+		
+		
+		$zip = new PclZip($source);
+		if ($zip->extract(PCLZIP_OPT_PATH, $path) == 0) {
+			die("Error : ".$zip->errorInfo(true));
+		}
+		
+		return $path;
 	}
 	
 	
@@ -612,16 +615,83 @@
 			}
 		}
 		
-		if (isset($installConf["activate"])) {
-			// template to activate
-			if (isset($installConf["activate"]["template"])) {
-				system_setTemplate($installConf["activate"]["template"]);
-			}
+		return $return;
+	}
+	
+	function system_verifyPack($filename) {
+		$tempPath = system_uncompressLocalPackedFile($filename);
+		
+		$return 			= array();
+		$return["error"] 	= false;
+		
+		if ($tempPath === false) {
+			$return["error"] = true;
+			return $return;
+		}
+		
+		$descriptorExists = file_exists($tempPath."install.conf");
+		if (!$descriptorExists) {
+			return array(
+				"error"		=> true,
+				"invalid"	=> true,
+				"messages"	=> "install.conf non existant"	
+			);
+		}
+		
+		$installConf = json_decode(file_get($tempPath."install.conf"),true);
+		
+		$validator = system_packDescriptorValidator($installConf);
+		if ($validator["error"]) {
+			$return["error"] = true;
+			$return["messages"] = $validator["messages"];
+		} else {
+			$return["meta"] = $installConf["meta"];
 		}
 		
 		return $return;
 	}
 	
+	function system_packDescriptorValidator($data) { // data:Array -> json_decode(install.conf)
+		$messages 	= array();
+		$return 	= array();
+		if (!isset($installConf["meta"])) {
+			array_push($message, "meta");
+		}
+		if (!isset($installConf["copy"])) {
+			array_push($message, "copy");
+		}
+		if (!isset($installConf["meta"]["name"])) {
+			array_push($message, "meta.name");
+		}
+		if (!isset($installConf["meta"]["author"])) {
+			array_push($message, "meta.author");
+		}
+		if (!isset($installConf["meta"]["version"])) {
+			array_push($message, "meta.version");
+		}
+		if (!isset($installConf["meta"]["contact"])) {
+			array_push($message, "meta.contact");
+		}
+		if (count($messages) == 0) {
+			$return["error"] = false;
+		} else {
+			$return["error"] 	= true;
+			$return["messages"] = $messages;
+		}
+	}
+	
+	function getIP() {
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])){
+			$ip=$_SERVER['HTTP_CLIENT_IP'];
+		}
+		elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+		}
+		else {
+			$ip=$_SERVER['REMOTE_ADDR'];
+		}
+		return $ip;
+	}
 	
 	
 	
