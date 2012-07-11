@@ -1,0 +1,81 @@
+<div class="container_12">
+	<div class="grid_12">
+		<p id="contactr_message"></p>
+		<form id="contactr_form" action="contactr/post" method="post">
+			<fieldset>
+				<label for="email">Email :</label>
+				<br /><br />
+				<input type="text" id="email" name="email" value="" />
+				<br /><br />
+
+				<label for="subject">Sujet :</label>
+				<br /><br />
+				<input type="text" id="subject" name="subject" value="" />
+				<br /><br />
+				
+				<label for="message">Message :</label><br /><br />
+				<textarea name="message" id="message"></textarea>
+				<br /><br /><br />
+				
+				<input type="submit" value="envoyer" />
+			</fieldset>
+		</form>
+	</div>
+</div>
+
+<style type="text/css">
+	#contactr_message {
+		font-weight: bold;
+	}
+	#contactr_message span {
+		padding: 10px;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+	}
+	#contactr_message #contactr_error {
+		color: #ff1717;
+	}
+	#contactr_message #contactr_success {
+		color: #3edd11;
+	}
+	#contactr_form {
+		margin: 20px 0 20px 0;
+	}
+	#contactr_form label {
+		font-weight: bold;
+	}
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#contactr_form').live('submit', function(e){
+			var scope = $(this);
+			$('#contactr_message').html('');
+			$.ajax({
+				type: scope.attr('method'), 
+				url: scope.attr('action'), 
+				data: scope.serialize(), 
+				dataType: "json", 
+				success: function(data){
+					if(data.result)
+					{
+						$('#contactr_form').remove();
+						$('#contactr_message').html('<span id="contactr_success">'+data.message+'</span>');
+					}
+					else
+					{
+						$('#contactr_message').html('<span id="contactr_error">'+data.message+'</span>');
+					}
+				},
+		        error: function(jqXHR, textStatus, errorThrown){
+		            console.log(
+		                "Erreur: "+
+		                textStatus, errorThrown
+		            );
+		        }
+			});
+			e.preventDefault();
+		});
+	});
+</script>

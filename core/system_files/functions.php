@@ -19,6 +19,11 @@
 	}
 	
 	
+	function location($path) {
+		global $_CONF;
+		header("Location: ".$_CONF["settings"]["base"].$path);
+	}
+	
 	function clientside_include() {
 		global $_CLIENTSIDELIBS, $_CONF;
 		
@@ -694,6 +699,115 @@
 	}
 	
 	
+	function initAdmin() {
+		
+		if (!$_SESSION["admin"]) {
+			location("site-admin/login");
+		}
+		
+		// list apps
+		$apps 		= array();
+		$apps_dir 	= getDirAsArray("apps", array("..","."));
+		foreach ($apps_dir as $appdir) {
+			$fileappid 	= "apps/".$appdir."/app.id";
+			$fileadmin 	= "apps/".$appdir."/admin.conf";
+			if (file_exists($fileappid) && file_exists($fileadmin)) {
+				$appid 		= json_decode(file_get($fileappid), true);
+				$appadmin 	= json_decode(file_get($fileadmin), true);
+				$apps[$appid["name"]] = array(
+					"id"	=> $appdir,
+					"info"	=> $appid,
+					"admin"	=> $appadmin,
+					"pages"	=> count($appadmin)
+				);
+			}
+		}
+		
+		// list themes
+		$themes 		= array();
+		$themes_dir 	= getDirAsArray("templates", array("..","."));
+		foreach ($themes_dir as $themedir) {
+			$fileappid 	= "templates/".$themedir."/theme.id";
+			$fileadmin 	= "templates/".$themedir."/admin.conf";
+			if (file_exists($fileappid) && file_exists($fileadmin)) {
+				$themeid 		= json_decode(file_get($fileappid), true);
+				$themeadmin 	= json_decode(file_get($fileadmin), true);
+				$themes[$themeid["name"]] = array(
+					"id"	=> $themedir,
+					"info"	=> $themeid,
+					"admin"	=> $themeadmin,
+					"pages"	=> count($themeadmin)
+				);
+			}
+		}
+		
+		// correct icon path
+		foreach ($apps as $idx => $app) {
+			foreach ($app["admin"] as $idx2 => $page) {
+				$apps[$idx]["admin"][$idx2]["icon"] = "templates/".$apps[$idx]["id"]."/admin/".$apps[$idx]["admin"][$idx2]["icon"];
+			}
+		}
+		foreach ($themes as $idx => $theme) {
+			foreach ($theme["admin"] as $idx2 => $page) {
+				$themes[$idx]["admin"][$idx2]["icon"] = "templates/".$themes[$idx]["id"]."/admin/".$themes[$idx]["admin"][$idx2]["icon"];
+			}
+		}
+		
+		$_GET["__shared__"]["admin"] = array(
+			"apps" => $apps,
+			"themes" => $themes
+		);
+		//debug("admin", $_GET["__shared__"]["admin"]);
+	}
+	
+	function getVars() {
+		global $_CONF;
+		return $_CONF["vars"];
+	}
+	
+	function saveVars() {
+		global $_CONF;
+		$_CONF["vars"] = $_GET["__shared__"]["vars"];
+		$confFile = "core/compiled/php/conf.php";
+		file_put_contents($confFile,"<?php\n\t\$_CONF=".array_to_phpArray($_CONF).";\n?>");
+	}
+	
+    /**
+     * setVar(namespace, var, val)
+     * setVar(namespace, array("var" => "val"))
+     * 
+     */
+	function setVar() {
+		
+		$_argv = func_get_args();
+		$_argc = func_num_args();
+		
+		// load vars
+		$vars = getVars();
+		if (!$_GET["__shared__"]["vars"]) {
+			$_GET["__shared__"]["vars"] = array();
+		}
+		foreach ($vars as $varNamespace => $varArray) {
+			$_GET["__shared__"]["vars"][$varNamespace] = $varArray;
+		}
+		
+		// Register namespace if not existing
+		if (!$_GET["__shared__"]["vars"][$_argv[0]]) {
+			$_GET["__shared__"]["vars"][$_argv[0]] = array();
+		}
+		if ($_argc == 2) {
+			if (is_array($_argv[1])) {
+				foreach ($_argv[1] as $var => $val) {
+					$_GET["__shared__"]["vars"][$_argv[0]][$var] = $val;
+				}
+			}
+		} elseif ($_argc == 3) {
+			$_GET["__shared__"]["vars"][$_argv[0]][$_argv[1]] = $_argv[2];
+		}
+		
+		// save vars
+		saveVars();
+	}
 	
 	
 	

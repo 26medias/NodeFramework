@@ -3,20 +3,20 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 		
 		<!-- Open-Graph Protocol (http://ogp.me/) -->
-		<meta property="og:title" content="{$shared.vars.theme_base.title}"/>
+		<meta property="og:title" content="Mon site"/>
 		<meta property="og:type" content="non_profit"/>
 		<meta property="og:locale" content="fr_FR"/>
 		<meta property="og:url" content="{$conf.settings.base}"/>
 		<meta property="og:image" content="{$conf.settings.base}misc/images/ogimg.jpg"/>
-		<meta property="og:site_name" content="{$shared.vars.theme_base.title}"/>
+		<meta property="og:site_name" content="Mon site"/>
 		<meta property="fb:admins" content=""/>
-		<meta property="og:description" content="{$shared.vars.theme_base.description|e}"/>
+		<meta property="og:description" content=""/>
 		
 		<!-- Url de base -->
 		<base href="{$conf.settings.base}" />
 		
 		
-		<title>{$shared.vars.theme_base.title}{{ if shared.template.hastitle }} - {$shared.template.title}{{endif }}</title>
+		<title>Mon site</title>
 		
 		<!-- JS et CSS à charger -->
 		{{ for type,include in includes }}
@@ -30,45 +30,25 @@
 		{{ endfor }}
 		
 	</head>
-	<body>
+	<body class="login">
 		<header>
-			<div class="container_12">
-				<div class="grid_12">
-					<img class="logo" src="templates/base/images/logo.png" />
-					<ul class="menu">
-						<li><a href="#">Home</a></li>
-						<li><a href="#">About</a></li>
-						<li><a href="#">Contact</a></li>
-					</ul>
-				</div>
-			</div>
+			<img class="logo" src="templates/base/images/logo.png" />
 		</header>
 		<div class="lineseparator"></div>
-		<div class="pagetitle">
-			<div class="container_12">
-				<div class="grid_12">
-					{{ if shared.template.hastitle }}
-						{$shared.template.title}
-					{{endif }}
-				</div>
-			</div>
-		</div>
 		<div class="main">
 			
 			<!-- Contenu de la page -->
-			{{ autoescape false }}
-			{$output}
-			{{ endautoescape }}
+			<div class="center" style="width: 400px;">
+				{{ autoescape false }}
+				{$output}
+				{{ endautoescape }}
+			</div>
 					
 		</div>
 		
 		<div class="lineseparator"></div>
 		<footer>
-			<div class="container_12">
-				<div class="grid_12">
-					{{ autoescape false }}{$shared.vars.theme_base.copyright}{{ endautoescape }}
-				</div>
-			</div>
+			Copyright &copy; 2012 Likimedia EURL.
 		</footer>
 	</body>
 </html>
