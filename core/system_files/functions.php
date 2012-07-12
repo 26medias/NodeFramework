@@ -699,9 +699,9 @@
 	}
 	
 	
-	function initAdmin() {
+	function initAdmin($options) {
 		
-		if (!$_SESSION["admin"]) {
+		if (!$_SESSION["admin"] && !isset($options["islogin"])) {
 			location("site-admin/login");
 		}
 		
