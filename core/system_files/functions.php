@@ -744,7 +744,7 @@
 		// correct icon path
 		foreach ($apps as $idx => $app) {
 			foreach ($app["admin"] as $idx2 => $page) {
-				$apps[$idx]["admin"][$idx2]["icon"] = "templates/".$apps[$idx]["id"]."/admin/".$apps[$idx]["admin"][$idx2]["icon"];
+				$apps[$idx]["admin"][$idx2]["icon"] = "apps/".$apps[$idx]["id"]."/admin/".$apps[$idx]["admin"][$idx2]["icon"];
 			}
 		}
 		foreach ($themes as $idx => $theme) {
