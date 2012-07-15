@@ -1,11 +1,31 @@
 <div class="container_12">
 	<div class="grid_12">
 		<img src="{$objectinfo.logo}" style="float: left; margin-right: 6px;" alt="" />
-		<h1 style="margin:2px;">{$objectinfo.name}</h1>
-		version {$objectinfo.version}
+		<h1 style="margin:2px;">{{if objectinfo.name}}{$objectinfo.name}{{else}}{$objectinfo.lib.id}{{endif}}</h1>
+		version 
+		{{if objectinfo.version}}{$objectinfo.version}{{else}}{$objectinfo.lib.version}{{endif}}
 		<div class="clearfix"></div>
+		{{if objectinfo.profile}}
 		<br />
 		<br />
 		<a href="{$objectinfo.profile}" target="_blank">Profile d'application</a>
+		{{endif}}
+		<br />
+		<br />
+		{{ if isServersideLib }}
+			{{ if isActive }}
+				<form action="" method="post">
+					<input type="hidden" name="deactivate_lib" value="true" />
+					<input type="hidden" name="objectid" value="{$objectinfo.lib.id}" />
+					<input type="submit" value="Desactiver" />
+				</form>
+			{{ else }}
+				<form action="" method="post">
+					<input type="hidden" name="activate_lib" value="true" />
+					<input type="hidden" name="objectid" value="{$objectinfo.lib.id}" />
+					<input type="submit" value="Activer" />
+				</form>
+			{{ endif }}
+		{{ endif }}
 	</div>
 </div>

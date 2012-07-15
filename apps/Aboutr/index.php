@@ -6,9 +6,7 @@
 		"dir"		=> $p["__here__"],
 		"template"	=> $_CONF["template"]."/main.html",
 		"file"		=> "view/index.html",
-		"data"		=> array(
-			"test" => "value"
-		)
+		"data"		=> array()
 	));
 	
 ?>

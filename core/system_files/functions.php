@@ -497,6 +497,57 @@
 		
 		array_push($serversideLibs["libs"], $id);
 		
+		//debug("serversideLibs", $serversideLibs["libs"]);
+		
+		$serversideLibs["libs"] 	= array_unique($serversideLibs["libs"]);
+		
+		$libs_serverside 			= system_listLibs($folder_libs_serverside);
+		
+		//debug("libs_serverside", $libs_serverside);
+		
+		$libs = array();
+		foreach ($serversideLibs["libs"] as $libName) {
+			foreach ($libs_serverside as $libArray) {
+				if ($libArray["id"] == $libName) {
+					array_push($libs, $libArray);
+				}
+			}
+		}
+		
+		
+		$libs 	= system_prioritizeExtLibs($libs);
+		$temp_php_buffer		= "";
+		
+		//debug("libs", $libs);
+		
+		foreach($libs as $libArray) {
+			$temp_php_buffer .= "// lib :: ".$libArray["id"]." (/".$libArray["path"].")\n";
+			foreach ($libArray["include"] as $fileArray) {
+				$temp_php_buffer .= "\trequire_once(\"".$fileArray["file"]."\");\n";
+			}
+		}
+		file_put_contents($cache_serverside_libs, json_encode($serversideLibs));
+		file_put_contents($cache_serverside_includes, "<?php\n".$temp_php_buffer."?>");
+	}
+	
+	
+	function system_unregisterServersideLib($id) {
+		$here							= "core/compiled/php/";
+		$cache_serverside_libs			= $here."cache_serverside_libs.json";
+		$cache_serverside_includes		= $here."common.php";
+		$folder_libs_serverside			= "system/libs/serverside/";
+		
+		$serversideLibs 				= json_decode(file_get($cache_serverside_libs),true);
+		
+		$newArray = array();
+		foreach ($serversideLibs["libs"] as $libname) {
+			if ($libname != $id) {
+				array_push($newArray, $libname);
+			}
+		}
+		
+		$serversideLibs["libs"]		= $newArray;
+		
 		$serversideLibs["libs"] 	= array_unique($serversideLibs["libs"]);
 		
 		$libs_serverside 			= system_listLibs($folder_libs_serverside);
@@ -576,6 +627,43 @@
 		return $path;
 	}
 	
+	function system_resetCache() {
+		$loc							= "core/compiled/clientside/";
+	
+		$cache_conf_clientsideincludes	= "core/compiled/php/clientsideincludes.php";
+		
+		$files = getFileAsArray($loc, array("js","css"));
+		
+		// erase the compiled files
+		foreach ($files as $file) {
+			unlink($loc.$file);
+		}
+		
+		// erase the lib list
+		file_put_contents($cache_conf_clientsideincludes,"<?php\n\t\$_CLIENTSIDELIBS = array();\n?>");
+		
+		// erase the images
+		$dirs = getDirAsArray($loc."images/", array(".",".."));
+		foreach ($dirs as $dir) {
+			$images = getFileAsArray($loc."images/".$dir);
+			foreach ($images as $image) {
+				unlink($loc."images/".$dir."/".$image);
+			}
+			rmdir($loc."images/".$dir);
+		}
+	}
+	
+	function system_saveConf() {
+		global $_CONF;
+		$confFile = "core/compiled/php/conf.php";
+		file_put_contents($confFile,"<?php\n\t\$_CONF=".array_to_phpArray($_CONF).";\n?>");
+	}
+	
+	function system_activateTheme($name) {
+		global $_CONF;
+		$_CONF["template"] = $name;
+		system_saveConf();
+	}
 	
 	function system_install($filename) {
 		$tempPath = system_uncompressPackedFile($filename);
@@ -619,6 +707,13 @@
 				}
 			}
 		}
+		if (isset($installConf["activate"])) {
+			if (isset($installConf["activate"]["template"])) {
+				system_activateTheme($installConf["activate"]["template"]);
+			}
+		}
+		
+		
 		
 		return $return;
 	}
@@ -685,6 +780,13 @@
 		}
 	}
 	
+	function system_getServersideLibList() {
+		$here							= "core/compiled/php/";
+		$cache_serverside_libs			= $here."cache_serverside_libs.json";
+		$serversideLibs 				= json_decode(file_get($cache_serverside_libs),true);
+		return $serversideLibs["libs"];
+	}
+	
 	function getIP() {
 		if (!empty($_SERVER['HTTP_CLIENT_IP'])){
 			$ip=$_SERVER['HTTP_CLIENT_IP'];
@@ -741,6 +843,46 @@
 			}
 		}
 		
+		// list serverside Libs
+		$libs 		= array();
+		$libs_dir 	= getDirAsArray("system/libs/serverside", array("..","."));
+		foreach ($libs_dir as $libdir) {
+			$filelibid 	= "system/libs/serverside/".$libdir."/lib.conf";
+			$fileadmin 		= "system/libs/serverside/".$libdir."/admin.conf";
+			if (file_exists($fileappid) /*&& file_exists($fileadmin)*/) {
+				$libid 		= json_decode(file_get($filelibid), true);
+				$libs[$libid["lib"]["id"]] = array(
+					"id"	=> $libdir,
+					"info"	=> $libid,
+					"pages"	=> count($libadmin)
+				);
+				if (file_exists($fileadmin)) {
+					$libadmin 	= json_decode(file_get($fileadmin), true);
+					$libs[$libid["lib"]["id"]]["admin"] = $libadmin;
+				}
+			}
+		}
+		
+		// list clientside Libs
+		$clibs 		= array();
+		$libs_dir 	= getDirAsArray("system/libs/clientside", array("..","."));
+		foreach ($libs_dir as $libdir) {
+			$filelibid 	= "system/libs/clientside/".$libdir."/lib.conf";
+			$fileadmin 		= "system/libs/clientside/".$libdir."/admin.conf";
+			if (file_exists($fileappid) /*&& file_exists($fileadmin)*/) {
+				$libid 		= json_decode(file_get($filelibid), true);
+				$clibs[$libid["lib"]["id"]] = array(
+					"id"	=> $libdir,
+					"info"	=> $libid,
+					"pages"	=> count($libadmin)
+				);
+				if (file_exists($fileadmin)) {
+					$libadmin 	= json_decode(file_get($fileadmin), true);
+					$clibs[$libid["lib"]["id"]]["admin"] = $libadmin;
+				}
+			}
+		}
+		
 		// correct icon path
 		foreach ($apps as $idx => $app) {
 			foreach ($app["admin"] as $idx2 => $page) {
@@ -752,10 +894,22 @@
 				$themes[$idx]["admin"][$idx2]["icon"] = "templates/".$themes[$idx]["id"]."/admin/".$themes[$idx]["admin"][$idx2]["icon"];
 			}
 		}
+		foreach ($libs as $idx => $lib) {
+			foreach ($lib["admin"] as $idx2 => $page) {
+				$libs[$idx]["admin"][$idx2]["icon"] = "system/libs/serverside/".$libs[$idx]["id"]."/admin/".$libs[$idx]["admin"][$idx2]["icon"];
+			}
+		}
+		foreach ($clibs as $idx => $lib) {
+			foreach ($lib["admin"] as $idx2 => $page) {
+				$clibs[$idx]["admin"][$idx2]["icon"] = "system/libs/serverside/".$clibs[$idx]["id"]."/admin/".$clibs[$idx]["admin"][$idx2]["icon"];
+			}
+		}
 		
 		$_GET["__shared__"]["admin"] = array(
-			"apps" => $apps,
-			"themes" => $themes
+			"apps" 		=> $apps,
+			"themes" 	=> $themes,
+			"libs" 		=> $libs,
+			"clibs" 	=> $clibs
 		);
 		//debug("admin", $_GET["__shared__"]["admin"]);
 	}
@@ -768,8 +922,7 @@
 	function saveVars() {
 		global $_CONF;
 		$_CONF["vars"] = $_GET["__shared__"]["vars"];
-		$confFile = "core/compiled/php/conf.php";
-		file_put_contents($confFile,"<?php\n\t\$_CONF=".array_to_phpArray($_CONF).";\n?>");
+		system_saveConf();
 	}
 	
     /**
@@ -806,6 +959,7 @@
 		}
 		
 		// save vars
+		
 		saveVars();
 	}
 	

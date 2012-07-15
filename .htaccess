@@ -481,6 +481,7 @@ AddCharset utf-8 .html .css .js .xml .json .rss
 	RewriteRule ^$ 													index.php?mode=web&app=index&module=index [L]
 	RewriteRule ^([\/])$  											index.php?mode=web&app=index&module=index [L]
 	RewriteRule ^(.*)\.conf$  										core/default/error/index.php?error=403 [L]
+	RewriteRule ^install([\/]?)$  									install.php [L]
 	
 	# admin
 	RewriteRule ^site-admin([\/]?)$  											index.php?mode=admin&admcore=true&module=index [L]
@@ -492,6 +493,12 @@ AddCharset utf-8 .html .css .js .xml .json .rss
 	
 	RewriteRule ^site-admin/themes/([a-zA-Z0-9_-]+)([\/]?)$  					index.php?mode=admin&admtype=themes&admcore=true&module=info&theme=$1 [L]
 	RewriteRule ^site-admin/themes/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)([\/]?)$  	index.php?mode=admin&admtype=themes&theme=$1&module=$2 [L]
+	
+	RewriteRule ^site-admin/libs/([a-zA-Z0-9_-]+)([\/]?)$  						index.php?mode=admin&admtype=libs&admcore=true&module=info&lib=$1 [L]
+	RewriteRule ^site-admin/libs/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)([\/]?)$  	index.php?mode=admin&admtype=libs&lib=$1&module=$2 [L]
+	
+	RewriteRule ^site-admin/clibs/([a-zA-Z0-9_-]+)([\/]?)$  					index.php?mode=admin&admtype=clibs&admcore=true&module=info&clib=$1 [L]
+	RewriteRule ^site-admin/clibs/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)([\/]?)$  	index.php?mode=admin&admtype=clibs&clib=$1&module=$2 [L]
 	
 	
 	# core functions

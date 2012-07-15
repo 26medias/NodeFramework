@@ -11,20 +11,30 @@
 			</div>
 			<form action="" method="post">
 				<div class="row">
-					<label for="field1">var1</label>
+					<label for="title">Titre de la page</label>
 					<div class="form-right">
-						<input type="text" value="{$shared.vars.contactr.var1}" name="var1" id="field1" />
+						<input type="text" value="{$shared.vars.contactr.title}" name="title" id="title" />
 					</div>
 					<div class="clearfix"></div>
 				</div>
 				<div class="row">
-					<label for="field2">var2</label>
+					<label for="text">Texte</label>
 					<div class="form-right">
-						<select name="var2" id="field2">
-							<option value="Option 1">Option 1</option>
-							<option value="Option 2">Option 2</option>
-							<option value="Option 3">Option 3</option>
-						</select>
+						<textarea name="text" id="text">{$shared.vars.contactr.text}</textarea>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="email">Email</label>
+					<div class="form-right">
+						<input type="text" value="{$shared.vars.contactr.email}" name="email" id="email" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="address">Adresse</label>
+					<div class="form-right">
+						<input type="text" value="{$shared.vars.contactr.address}" name="address" id="address" />
 					</div>
 					<div class="clearfix"></div>
 				</div>
@@ -36,9 +46,3 @@
 		</div>
 	</div>
 </div>
-
-<script type="text/javascript">
-	$(function() {
-		$("#field2").val("{$shared.vars.contactr.var2}");
-	});
-</script>

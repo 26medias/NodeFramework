@@ -5,11 +5,36 @@
 	
 	tpl_setPageTitle("Configuration");
 	
-	if (isset($_GET["app"])) {
-		$objectinfo = json_decode(file_get("apps/".$_GET["app"]."/app.id"),true);
-	} elseif (isset($_GET["theme"])) {
-		$objectinfo = json_decode(file_get("templates/".$_GET["theme"]."/theme.id"),true);
+	$isActive = false;
+	
+	if (isset($p["activate_lib"])) {
+		system_registerServersideLib($p["objectid"]);
 	}
+	if (isset($p["deactivate_lib"])) {
+		system_unregisterServersideLib($p["objectid"]);
+	}
+	
+	//debug("p",$p);
+	
+	// TODO: deprecate @version in the app.id descriptor
+	switch($p["admtype"]) {
+		case "apps":
+		$objectinfo = json_decode(file_get("apps/".$_GET["app"]."/app.id"),true);
+		break;
+		case "themes":
+		$objectinfo = json_decode(file_get("templates/".$_GET["theme"]."/theme.id"),true);
+		break;
+		case "libs":
+		$objectinfo 	= json_decode(file_get("system/libs/serverside/".$_GET["lib"]."/lib.conf"),true);
+		$serversideLibs = system_getServersideLibList();
+		$isActive 		= in_array($objectinfo["lib"]["id"], $serversideLibs);
+		break;
+		case "clibs":
+		$objectinfo 	= json_decode(file_get("system/libs/clientside/".$_GET["clib"]."/lib.conf"),true);
+		break;
+	}
+	
+	//debug("objectinfo", $objectinfo);
 	
 	render(array(
 		"require"	=> array(),
@@ -17,7 +42,9 @@
 		"template"	=> $_CONF["template"]."/admin.html",
 		"file"		=> "view/info.html",
 		"data"		=> array(
-			"objectinfo"	=> $objectinfo
+			"objectinfo"		=> $objectinfo,
+			"isServersideLib"	=> isset($_GET["lib"]),
+			"isActive"			=> $isActive
 		)
 	));
 	

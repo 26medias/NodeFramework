@@ -73,7 +73,26 @@
 				<img src="templates/base/images/adm_libs.png" style="margin-top: 25px;" alt="" />
 				<div class="admseparator"></div>
 				<ul class="sidemenu">
-					
+					{{ for lib in shared.admin.libs }}
+					<li><a href="site-admin/libs/{$lib.id}" style="background-image:url({$lib.info.icon});">{{if lib.info.name}}{$lib.info.name}{{else}}{$lib.info.lib.id}{{endif}}</a>
+						<ul class="sub">
+						{{ for pagename, page in lib.admin }}
+							<li><a href="site-admin/libs/{$lib.id}/{$page.page}" style="background-image:url({$page.icon});">{$pagename}</a></li>
+						{{ endfor }}
+						</ul></li>
+					{{ endfor }}
+				</ul>
+				<img src="templates/base/images/adm_libs.png" style="margin-top: 25px;" alt="" />
+				<div class="admseparator"></div>
+				<ul class="sidemenu">
+					{{ for lib in shared.admin.clibs }}
+					<li><a href="site-admin/clibs/{$lib.id}" style="background-image:url({$lib.info.icon});">{{if lib.info.name}}{$lib.info.name}{{else}}{$lib.info.lib.id}{{endif}}</a>
+						<ul class="sub">
+						{{ for pagename, page in lib.admin }}
+							<li><a href="site-admin/clibs/{$lib.id}/{$page.page}" style="background-image:url({$page.icon});">{$pagename}</a></li>
+						{{ endfor }}
+						</ul></li>
+					{{ endfor }}
 				</ul>
 			</div>
 			{{ endautoescape }}
@@ -84,7 +103,7 @@
 				{$output}
 				{{ endautoescape }}
 			</div>
-			
+			<div class="clearfix"></div>
 		</div>
 		<div class="clearfix"></div>
 		<div class="lineseparator"></div>

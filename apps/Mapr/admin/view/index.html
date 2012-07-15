@@ -11,20 +11,9 @@
 			</div>
 			<form action="" method="post">
 				<div class="row">
-					<label for="field1">var1</label>
+					<label for="field1">Adresse</label>
 					<div class="form-right">
-						<input type="text" value="{$shared.vars.mapr.var1}" name="var1" id="field1" />
-					</div>
-					<div class="clearfix"></div>
-				</div>
-				<div class="row">
-					<label for="field2">var2</label>
-					<div class="form-right">
-						<select name="var2" id="field2">
-							<option value="Option 1">Option 1</option>
-							<option value="Option 2">Option 2</option>
-							<option value="Option 3">Option 3</option>
-						</select>
+						<input type="text" value="{$shared.vars.mapr.address}" name="address" />
 					</div>
 					<div class="clearfix"></div>
 				</div>
@@ -36,9 +25,3 @@
 		</div>
 	</div>
 </div>
-
-<script type="text/javascript">
-	$(function() {
-		$("#field2").val("{$shared.vars.mapr.var2}");
-	});
-</script>

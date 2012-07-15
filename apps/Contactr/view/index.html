@@ -1,49 +1,150 @@
 <div class="container_12">
 	<div class="grid_12">
+		<h1>{$shared.vars.contactr.title|e}</h1>
+		<p>{$shared.vars.contactr.text|e|nl2br}</p>
+	</div>
+	<div class="clear"></div>
+	<div class="grid_8">
 		<p id="contactr_message"></p>
 		<form id="contactr_form" action="contactr/post" method="post">
 			<fieldset>
-				<label for="email">Email :</label>
-				<br /><br />
-				<input type="text" id="email" name="email" value="" />
-				<br /><br />
+				<div class="row half">
+					<label for="name">Nom :</label>
+					<input type="text" id="name" name="name" value="" />
+				</div>
 
-				<label for="subject">Sujet :</label>
-				<br /><br />
-				<input type="text" id="subject" name="subject" value="" />
-				<br /><br />
+				<div class="row half">
+					<label for="surname">Prenom :</label>
+					<input type="text" id="surname" name="surname" value="" />
+				</div>
+
+				<div class="row half">
+					<label for="email">Email :</label>
+					<input type="text" id="email" name="email" value="" />
+				</div>
+
+				<div class="row half">
+					<label for="subject">Sujet :</label>
+					<input type="text" id="subject" name="subject" value="" />
+				</div>
 				
-				<label for="message">Message :</label><br /><br />
-				<textarea name="message" id="message"></textarea>
-				<br /><br /><br />
-				
-				<input type="submit" value="envoyer" />
+				<div class="row">
+					<label for="message">Message :</label>
+					<textarea name="message" id="message"></textarea>
+				</div>
+
+				<div class="clear"></div>
+
+				<div class="row">
+					<input type="submit" value="envoyer" />
+				</div>
 			</fieldset>
 		</form>
+	</div>
+	<div class="grid_4">
+		<iframe id="contactr_map" width="300" height="380" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.fr/maps?f=q&amp;iwloc=&amp;source=s_q&amp;hl=fr&amp;geocode=&amp;q={$shared.vars.contactr.address|url_encode}&amp;center={$shared.vars.contactr.address|url_encode}&amp;aq=&amp;sll=46.75984,1.738281&amp;sspn=12.300234,28.54248&amp;ie=UTF8&amp;hq=&amp;hnear={$shared.vars.contactr.address|url_encode}&amp;spn=0.006337,0.013937&amp;t=m&amp;z=16&amp;output=embed&amp;markers=icon:{$shared.vars.contactr.address|url_encode}|"></iframe>
 	</div>
 </div>
 
 <style type="text/css">
 	#contactr_message {
 		font-weight: bold;
+		width: 590px;
 	}
 	#contactr_message span {
+		display: block;
 		padding: 10px;
-		-webkit-border-radius: 5px;
-		-moz-border-radius: 5px;
-		border-radius: 5px;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
 	}
 	#contactr_message #contactr_error {
-		color: #ff1717;
+		border: #c00000 1px solid;
+		color: #c00000;
+		background-color: #ff9898;
 	}
 	#contactr_message #contactr_success {
-		color: #3edd11;
+		border: #00a30c 1px solid;
+		color: #00a30c;
+		background-color: #8bff93;
 	}
 	#contactr_form {
 		margin: 20px 0 20px 0;
 	}
+	#contactr_form .row {
+		float: left;
+		margin-bottom: 20px;
+	}
+	#contactr_form .row.half {
+		width: 310px;
+	}
 	#contactr_form label {
-		font-weight: bold;
+		display: block;
+		font-size: 14px;
+		margin-bottom: 10px;
+		color: #606060;
+	}
+	#contactr_form input[type="text"]:focus, #contactr_form textarea:focus {
+		-webkit-box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.1);
+		box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.1); 
+	}
+	#contactr_form input[type="text"]
+	{
+		height: 32px;
+		line-height: 32px;
+		width: 280px;
+		border: #d0d0d0 1px solid;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+		padding: 1px 5px 1px 5px;
+	}
+	#contactr_form textarea {
+		width: 590px;
+		height: 100px;
+		border: #d0d0d0 1px solid;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+		padding: 5px;
+	}
+	#contactr_form input[type="submit"]
+	{
+		margin-top: 20px;
+	}
+	#contactr_form input[type="submit"] {
+		-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+		-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+		box-shadow:inset 0px 1px 0px 0px #ffffff;
+		background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+		background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+		filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+		background-color:#ededed;
+		-moz-border-radius:6px;
+		-webkit-border-radius:6px;
+		border-radius:6px;
+		border:1px solid #dcdcdc;
+		display:inline-block;
+		color:#777777;
+		font-family:arial;
+		font-size:15px;
+		font-weight:bold;
+		padding:6px 24px;
+		text-decoration:none;
+		text-shadow:1px 1px 0px #ffffff;
+	}
+	#contactr_form input[type="submit"]:hover {
+		background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+		background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+		filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+		background-color:#dfdfdf;
+	}
+	#contactr_form input[type="submit"]:active {
+		position:relative;
+		top:1px;
+	}
+	#contactr_map {
+		margin: 20px 0 20px 0;
 	}
 </style>
 

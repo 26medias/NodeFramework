@@ -16,7 +16,17 @@
 	
 	$_GET["__qs__"] 	= $__qs;
 	$_GET["__shared__"] = array();
+	$_GET["__shared__"] = array(
+		"session"	=> $_SESSION
+	);
 	$_GET["__shared__"]["vars"] = $_CONF["vars"];
+	
+	if (!isset($_GET["app"])) {
+		$_GET["app"] = "index";
+	}
+	if (!isset($_GET["module"])) {
+		$_GET["module"] = "index";
+	}
 	
 	switch ($_GET["mode"]) {
 		case "web":
@@ -40,6 +50,14 @@
 					case "themes":
 						$_GET["__here__"] = "templates/".$_GET["theme"]."/admin/";
 						require_once("templates/".$_GET["theme"]."/admin/".$_GET["module"].".php");
+					break;
+					case "libs":
+						$_GET["__here__"] = "system/libs/serverside/".$_GET["lib"]."/admin/";
+						require_once("system/libs/serverside/".$_GET["lib"]."/admin/".$_GET["module"].".php");
+					break;
+					case "clibs":
+						$_GET["__here__"] = "system/libs/clientside/".$_GET["clib"]."/admin/";
+						require_once("system/libs/clientside/".$_GET["clib"]."/admin/".$_GET["module"].".php");
 					break;
 				}
 				

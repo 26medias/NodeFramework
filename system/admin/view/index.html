@@ -1,6 +1,54 @@
 <div class="container_12">
 	<div class="grid_12">
-		Interface d'admin<br />
-		Panel d'info &agrave; creer.
+		{{ if updated }}
+			<div class="message info">
+				<p>Informations mises &agrave; jour.</p>
+			</div>
+		{{ endif }}
+		
+		<div class="box">
+			<div class="head">
+				Configuration de base
+			</div>
+			<form action="" method="post">
+				<input type="hidden" name="formsubmit" value="true" />
+				<div class="row">
+					<label for="baseurl">URL du site</label>
+					<div class="form-right">
+						<input type="text" value="{$conf.settings.base}" name="baseurl" id="baseurl" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<input type="submit" value="Valider" class="cta" style="float: right" />
+					<div class="clearfix"></div>
+				</div>
+			</form>
+		</div>
+		
+		<h1>Maintenance</h1>
+		<form action="" method="post">
+			<input type="hidden" name="reset-cache" value="true" />
+			<input type="submit" value="Cache reset" />
+		</form>
+		
+		<h1>Themes disponibles</h1>
+		<div class="theme-container">
+			{{ for theme in shared.admin.themes }}
+			<div class="available-theme">
+				<a href=""><img class="preview" src="http://127.0.0.1/_deprecated/contracts/29%20-%20sitegen/store/misc/storage/pictures/14/14.1341869711.c5795bcde1f5ed079ec78e236a9185da.jpg" alt="" /></a>
+				<h3>{$theme.info.name}</h3>
+				Version {$theme.info.version}<br />
+				{{if current_theme != theme.id}}
+					<form action="" method="post">
+						<input type="hidden" name="theme-id" value="{$theme.id}" />
+						<input type="submit" value="Activer" />
+					</form>
+				{{ endif}}
+			</div>
+			{{ endfor }}
+		</div>
+		
+		
 	</div>
 </div>
