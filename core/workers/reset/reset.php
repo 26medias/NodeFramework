@@ -6,7 +6,6 @@
 	
 	$files = getFileAsArray($loc, array("js","css"));
 	
-	
 	// erase the compiled files
 	foreach ($files as $file) {
 		unlink($loc.$file);
