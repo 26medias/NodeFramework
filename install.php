@@ -25,5 +25,9 @@
 	foreach ($required_libs as $libname) {
 		system_registerServersideLib($libname);
 	}
+	
+	// install the template
+	system_activateTheme("base");
+	
 	location("site-admin");
 ?>
