@@ -15,10 +15,10 @@
 function useDataBase() {
 	global $_DB,$_CONF;
 	if (empty($_DB)) {
-		$_DB = new sql_db($_CONF["libsettings"]["server"]["MySQL"]["server"], $_CONF["libsettings"]["server"]["MySQL"]["login"], $_CONF["libsettings"]["server"]["MySQL"]["password"], $_CONF["libsettings"]["server"]["MySQL"]["dbname"], false);
+		$_DB = new sql_db($_CONF["vars"]["mysql"]["host"], $_CONF["vars"]["mysql"]["user"], $_CONF["vars"]["mysql"]["password"], $_CONF["vars"]["mysql"]["dbname"], false);
 	}
 	if(!$_DB->db_connect_id) {
-	    die("<br><br><center><b>There seems to be a problem with the MySQL server, sorry for the inconvenience.<br><br>We should be back shortly.</center></b>");
+	    echo("<br><br><center><b>Veuillez verifier les parametres de la connexion MySQL.</center></b>");
 	}
 }
 useDataBase();

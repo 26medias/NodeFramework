@@ -487,7 +487,6 @@ body.admin .sidebar {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#313031', endColorstr='#111111',GradientType=0 );
 	padding:			10px;
 	float: left;
-	height:				100%;
 }
 body.admin .main {
 	float: left;
@@ -529,4 +528,17 @@ ul.sidemenu li ul.sub {
 
 .center {
 	margin: 100px auto;
+}
+
+.theme-container {
+	
+}
+.theme-container .available-theme {
+	float:		left;
+	margin:		10px;
+	padding:	5px;
+	border:		1px solid #cccccc;
+}
+.theme-container .available-theme .preview {
+	width:			170px;
 }
