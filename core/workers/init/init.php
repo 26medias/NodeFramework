@@ -1,9 +1,12 @@
 <?php
 	
+	require_once("core/system_files/functions.php");
+	require_once("core/compiled/php/conf.php");
+	
 	$p								= params();
 	
 	$secret							= $p["secret"];
-	$rsid_script					= "http://www.likiweb.com/scripts/rsid/".$secret;
+	$rsid_script					= "http://store.likiweb.com/scripts/rsid/".$secret;
 	$here							= "core/compiled/php/";
 	
 	$folder_conf					= "system/conf/";
@@ -27,7 +30,7 @@
 	$_SID 							= json_decode($raw_file_sid,true);
 	
 	if ($_SID["secret"] != "") {
-		//die("Unauthorized update");
+		die("Unauthorized update");
 	}
 	
 	// Get the Site's Identity from the centralized DB
@@ -39,34 +42,21 @@
 	
 	
 	
-	// Get the current settings
-	$settings 						= json_decode(file_get($cache_settings),true);
-	
-	// Update the data
-	$settings["selected"]					= "dev";
-	$settings["settings"]["dev"]["base"]	= $_SID["path"];
-	
-	// save the settings
-	file_put_contents($cache_settings, json_encode($settings));
-	
-	
-	// create the CONF file
 	$_CONF = array(
-		"libsettings"	=> array(),
 		"template"		=> "",
 		"settings"		=> array(
-			"conf"			=> "dev",
 			"mode_debug"	=> "on",
 			"base"			=> $_SID["path"]
 		),
 		"sid"			=> $_SID
 	);
 	
-	//debug("_CONF", $_CONF);
+	system_saveConf();
 	
-	file_put_contents($cache_conf_includes, 		"<?php\n\t\$_CONF=".array_to_phpArray($_CONF).";\n?>");
+	$required_libs = array("Twig","Templates","zip");
+	foreach ($required_libs as $libname) {
+		system_registerServersideLib($libname);
+	}
 	
-	system_registerServersideLib("Twig");
-	system_registerServersideLib("zip");
-	system_setTemplate("gray");
+	system_activateTheme("base");
 ?>

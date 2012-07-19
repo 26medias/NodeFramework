@@ -17,6 +17,9 @@
 	}
 	$realpath = implode("/", $realpath);
 	$base = "http://".$_SERVER["SERVER_NAME"]."/".$realpath."/";
+	if (!isset($_CONF["settings"])) {
+		$_CONF["settings"] = array();
+	}
 	$_CONF["settings"]["base"] = $base;
 	system_saveConf();
 	
