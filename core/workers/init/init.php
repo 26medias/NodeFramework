@@ -50,6 +50,7 @@
 		),
 		"sid"			=> $_SID
 	);
+	$_CONF["original_template"] = false;
 	
 	system_saveConf();
 	
@@ -59,4 +60,5 @@
 	}
 	
 	system_activateTheme("base");
+	system_activateAdminTheme("adm-base");
 ?>
