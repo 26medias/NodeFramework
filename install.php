@@ -21,6 +21,7 @@
 		$_CONF["settings"] = array();
 	}
 	$_CONF["settings"]["base"] = $base;
+	$_CONF["original_template"] = false;
 	system_saveConf();
 	
 	// register the default serverside libs
@@ -31,6 +32,8 @@
 	
 	// install the template
 	system_activateTheme("base");
+	system_activateAdminTheme("adm-base");
+	
 	
 	location("site-admin");
 ?>

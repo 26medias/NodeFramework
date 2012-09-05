@@ -703,7 +703,7 @@
 		global $_CONF;
 		$confFile = "core/compiled/php/conf.php";
 		// reset theme swap
-		if (isset($_CONF["original_template"])) {
+		if (isset($_CONF["original_template"]) && $_CONF["original_template"] != false && $_CONF["original_template"] != "") {
 			$_CONF["template"] 			= $_CONF["original_template"];
 			$_CONF["original_template"] = false;
 			$tpl_swap = true;
