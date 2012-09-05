@@ -1,0 +1,87 @@
+
+<div class="container_12">
+	<div class="grid_12">
+		<div class="box">
+			<div class="head">
+				App Installer
+			</div>
+			<form action="site-admin/apps/appmanager/pack" target="frame" id="frm" method="post">
+				<div class="row">
+					<label for="name">Select an app file</label>
+					<div class="form-right">
+						<input type="file" id="pack_upload" />
+						<div id="pack_preview"></div>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				
+				<div class="row">
+					<input type="submit" value="Valider" id="btn-submit" class="cta" style="float: right" />
+					<div class="clearfix"></div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+	function install(pack) {
+		$.ajax({
+			url: 		"{$conf.settings.base}site-admin/apps/appmanager/extract",
+			dataType:	"json",
+			type:		"POST",
+			data:		{
+				pack:		pack
+			},
+			success: 	function(data){
+				console.log(data);
+				if (data.error) {
+					alert("Installation Error");
+				} else {
+					alert("Installation finished");
+				}
+			}
+		});
+	}
+	
+	$(function() {
+		
+		$("#pack_upload").uploadify({
+			multi:			false,
+			swf: 			"{$conf.settings.base}misc/swf/uploadify.swf",
+			uploader: 		"{$conf.settings.base}site-admin/apps/appmanager/upload",
+			buttonClass:	'button',
+			buttonText:		'Browse',
+			formData:		{
+				
+			},
+			onUploadError : function(file, errorCode, errorMsg, errorString) {
+			},
+			onUploadSuccess: function(file, data, response) {
+				try {
+					data = JSON.parse(data);
+					if (data.error) {
+						alert(data.message);
+					} else {
+						$("#pack_preview").empty();
+						
+						$(".packemptymessage").empty();
+						
+						$("#pack_preview").show().html("<u>"+data.meta.name+"</u> version <u>"+data.meta.version+"</u><br />");
+						var actionButton = $.create("button", $("#pack_preview"));
+						actionButton.html("Install?");
+						actionButton.click(function(e) {
+							e.stopImmediatePropagation();
+							e.preventDefault();
+							install(data.pack);
+						});
+					}
+				} catch (err) {
+					alert("Invalid Archive");
+				}
+			}
+		});
+		
+	});
+</script>

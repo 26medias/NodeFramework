@@ -1,0 +1,50 @@
+<div class="container_12">
+	<div class="grid_12">
+		{{ if updated }}
+			<div class="message info">
+				<p>Updated.</p>
+			</div>
+		{{ endif }}
+		<div class="box">
+			<div class="head">
+				Site Options
+			</div>
+			<form action="" method="post">
+				<input type="hidden" name="updated" value="true" />
+				<div class="row">
+					<label for="login">Login</label>
+					<div class="form-right">
+						<input type="text" value="{$shared.vars.site.login}" name="login" id="login" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="password">Password</label>
+					<div class="form-right">
+						<input type="password" value="{$shared.vars.site.password}" name="password" id="password" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="name">Site name</label>
+					<div class="form-right">
+						<input type="text" value="{$shared.vars.site.name}" name="name" id="name" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				
+				<div class="row">
+					<input type="submit" value="Valider" class="cta" style="float: right" />
+					<div class="clearfix"></div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+	$(function() {
+		
+	});
+</script>

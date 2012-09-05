@@ -1,15 +1,12 @@
 <div class="container_12">
 	<div class="grid_12">
-		<img src="{$objectinfo.logo}" style="float: left; margin-right: 6px;" alt="" />
 		<h1 style="margin:2px;">{{if objectinfo.name}}{$objectinfo.name}{{else}}{$objectinfo.lib.id}{{endif}}</h1>
+		{{ if objtype != "apps" and objtype != "themes" }}
+			<i>{$objectinfo.lib.description}</i><br />
+		{{ endif }}
 		version 
 		{{if objectinfo.version}}{$objectinfo.version}{{else}}{$objectinfo.lib.version}{{endif}}
 		<div class="clearfix"></div>
-		{{if objectinfo.profile}}
-		<br />
-		<br />
-		<a href="{$objectinfo.profile}" target="_blank">Profile d'application</a>
-		{{endif}}
 		<br />
 		<br />
 		{{ if isServersideLib }}
@@ -17,15 +14,136 @@
 				<form action="" method="post">
 					<input type="hidden" name="deactivate_lib" value="true" />
 					<input type="hidden" name="objectid" value="{$objectinfo.lib.id}" />
-					<input type="submit" value="Desactiver" />
+					<input type="submit" value="Deactivate" />
 				</form>
 			{{ else }}
 				<form action="" method="post">
 					<input type="hidden" name="activate_lib" value="true" />
 					<input type="hidden" name="objectid" value="{$objectinfo.lib.id}" />
-					<input type="submit" value="Activer" />
+					<input type="submit" value="Activate" />
 				</form>
 			{{ endif }}
+		{{ endif }}
+		
+		{{ if objtype == "apps" }}
+			<h3>Declared Public Pages</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>Path</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{ for page in objectinfo.pages }}
+					<tr>
+						<td>/{$page.path}</td>
+						<td>{$page.description}</td>
+					</tr>
+					{{ else }}
+					<tr>
+						<td colspan="3">
+							No page
+						</td>
+					</tr>
+				{{ endfor }}
+				</tbody>
+			</table>
+		{{endif }}
+		
+		{{ if objtype != "apps" and objtype != "themes" }}
+			<h3>Dependencies:</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Installed version</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{ if objtype == "clibs" }}
+						{{ for require in objectinfo.lib.require }}
+						<tr>
+							<td>
+								<a href="site-admin/clibs/{$require}">{$require}</a>
+							</td>
+							{{ if attribute(shared.admin.clibs, require).id != "" }}
+								<td>
+									{$attribute(shared.admin.clibs, require).info.lib.version}
+								</td>
+								<td>
+									{$attribute(shared.admin.clibs, require).info.lib.description}
+								</td>
+							{{ else }}
+								<td colspan="2">
+									Missing Library "{$require}"
+								</td>
+							{{ endif }}
+						</tr>
+						{{ else }}
+						<tr>
+							<td colspan="3">
+								No dependency
+							</td>
+						</tr>
+						{{ endfor }}
+					{{ endif }}
+					{{ if objtype == "libs" }}
+						{{ for require in objectinfo.lib.require }}
+						<tr>
+							<td>
+								<a href="site-admin/libs/{$require}">{$require}</a>
+							</td>
+							{{ if attribute(shared.admin.libs, require).id != "" }}
+								<td>
+									{$attribute(shared.admin.libs, require).info.lib.version}
+								</td>
+								<td>
+									{$attribute(shared.admin.libs, require).info.lib.description}
+								</td>
+							{{ else }}
+								<td colspan="2">
+									Missing Library "{$require}"
+								</td>
+							{{ endif }}
+						</tr>
+						{{ else }}
+						<tr>
+							<td colspan="3">
+								No dependency
+							</td>
+						</tr>
+						{{ endfor }}
+					{{ endif }}
+				</tbody>
+			</table>
+			
+			<h3>Included files in this lib:</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>File</th>
+						<th>Type</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{ for include in objectinfo.lib.include }}
+					<tr>
+						<td>{$include.file}</td>
+						<td>{$include.type}</td>
+						<td>{$include.description}</td>
+					</tr>
+					{{ else }}
+					<tr>
+						<td colspan="3">
+							No files
+						</td>
+					</tr>
+				{{ endfor }}
+				</tbody>
+			</table>
 		{{ endif }}
 	</div>
 </div>

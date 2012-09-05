@@ -14,9 +14,6 @@
 		system_unregisterServersideLib($p["objectid"]);
 	}
 	
-	//debug("p",$p);
-	
-	// TODO: deprecate @version in the app.id descriptor
 	switch($p["admtype"]) {
 		case "apps":
 		$objectinfo = json_decode(file_get("apps/".$_GET["app"]."/app.id"),true);
@@ -44,6 +41,7 @@
 		"data"		=> array(
 			"objectinfo"		=> $objectinfo,
 			"isServersideLib"	=> isset($_GET["lib"]),
+			"objtype"			=> $p["admtype"],
 			"isActive"			=> $isActive
 		)
 	));

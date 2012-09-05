@@ -1,0 +1,8 @@
+{
+	"admintpl":	true,
+	"name": 	"adm-base",
+	"version":	"1.8.2",
+	"screenshot":	"templates/adm-base/screenshot.jpg",
+	"logo":		"http://store.likiweb.com/misc/storage/assets/apps/1342014449_8190346630abcc7fc49d40755edf2132.jpg",
+	"icon":		"icon.png"
+}

@@ -1,0 +1,112 @@
+
+<div class="container_12">
+	<div class="grid_12">
+		<div class="box">
+			<div class="head">
+				App Exporter
+			</div>
+			<form action="site-admin/apps/appmanager/pack" target="frame" id="frm" method="post">
+				<div class="row">
+					<label for="name">App Name</label>
+					<div class="form-right">
+						<input type="text" value="" name="name" id="name" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="author">App Author</label>
+					<div class="form-right">
+						<input type="text" value="" name="author" id="author" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="version">App Version</label>
+					<div class="form-right">
+						<input type="text" value="" name="version" id="version" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="email">App Contact Email</label>
+					<div class="form-right">
+						<input type="text" value="" name="email" id="email" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="website">App Website</label>
+					<div class="form-right">
+						<input type="text" value="" name="website" id="website" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				
+				<div class="row">
+					<label for="title">Files to include</label>
+					<div class="form-right" id="files">
+						<ul id="rootnode">
+						</ul>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				
+				<input type="hidden" name="export" id="export" />
+				
+				<div class="frames">
+					
+				</div>
+				
+				<div class="row">
+					<input type="submit" value="Valider" id="btn-submit" class="cta" style="float: right" />
+					<div class="clearfix"></div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+	$(function() {
+		$("#rootnode").tree({
+			root: 	".",
+			srv:	"site-admin/apps/appmanager/ls"
+		});
+		
+		$("#btn-submit").click(function(e) {
+			e.stopImmediatePropagation();
+			e.preventDefault();
+			$("#rootnode").tree("export",{
+				callback: function(data) {
+					$("#export").val(JSON.stringify(data));
+					
+					$.ajax({
+						url: 		"{$conf.settings.base}site-admin/apps/appmanager/pack",
+						dataType:	"text",
+						type:		"POST",
+						data:		{
+							base:		"./",
+							export:		$("#export").val(),
+							name:		$("#name").val(),
+							author:		$("#author").val(),
+							version:	$("#version").val(),
+							email:		$("#email").val(),
+							website:	$("#website").val()
+						},
+						success: 	function(data){
+							var iframe = $.create("iframe", $(".frames"));
+							iframe.css({
+								width: 	0,
+								height: 0,
+								border: 0
+							});
+							iframe.attr('src', data);
+						}
+					});
+				}
+			});
+		});
+		
+	});
+</script>

@@ -1,0 +1,46 @@
+ul.jstree {
+	border:			1px solid #33333;
+}
+ul.jstree, ul.jstree ul {
+	padding:		0;
+	margin:			0;
+	list-style:		none;
+}
+ul.jstree li {
+	margin-left:	4px;
+	padding-left:	10px;
+	border-left:	1px dotted #e7e7e7;
+}
+ul.jstree .treeDirLeaf {
+	cursor:			pointer;
+	font-weight:	bold;
+	padding-left:	12px;
+}
+ul.jstree .treeFileLeaf {
+	cursor:			pointer;
+}
+ul.jstree .treeNode {
+	cursor:			pointer;
+	font-weight:	bold;
+	background-image:	url("plus.png");
+	background-repeat:	no-repeat;
+	background-position:	left center;
+	padding-left:	12px;
+}
+ul.jstree .opened > .treeNode {
+	background-image:	url("minus.png");
+}
+
+ul.jstree .checkbox {
+	background-image:	url("box0.png");
+	background-repeat:	no-repeat;
+	background-position:	left center;
+	padding-left:	12px;
+}
+ul.jstree .checkbox.checked {
+	background-image:	url("box1.png");
+	color:				#214e9a;
+}
+ul.jstree .checkbox.partial {
+	background-image:	url("box2.png");
+}

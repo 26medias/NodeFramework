@@ -3,16 +3,53 @@
 		global $_GET, $_POST;
 		$output = array();
 		foreach ($_GET["__qs__"] as $key => $value) {
-			$output[$key] = $value;
+			$output[$key] = stripslashes($value);
 		}
 		foreach ($_POST as $key => $value) {
-			$output[$key] = $value;
+			$output[$key] = stripslashes($value);
 		}
 		foreach ($_GET as $key => $value) {
-			$output[$key] = $value;
+			$output[$key] = stripslashes($value);
 		}
 		return $output;
 	}
+	
+	
+	function create_token() {
+		return md5(generateGUID());
+	}
+	
+	function generateGUID() {
+		return mt_rand(100000,900000);
+	}
+
+	function makePath($path) {
+		if (!is_dir($path)) {
+			$parts = explode("/",$path);
+			$buffer = ".";
+			foreach($parts as $part) {
+				$buffer = $buffer."/".$part;
+				if (!is_dir($buffer)) {
+					$mk = mkdir($buffer);
+				}
+			}
+		}
+	}
+	
+	
+	function share() {
+		$_argv = func_get_args();
+		$_argc = func_num_args();
+		if (is_array($_argv[0])) {
+			foreach ($_argv[0] as $var => $val) {
+				$_GET["__shared__"][$var] = $val;
+			}
+		} else {
+			$_GET["__shared__"][$_argv[0]] = $_argv[1];
+		}
+		
+	}
+		
 	
 	function debug($label, $data) {
 		echo "<div style=\"margin-left: 40px;\"><u><h3>".$label."</h3></u><pre style=\"border-left:2px solid #000000;margin:10px;padding:4px;\">".print_r($data, true)."</pre></div>";
@@ -415,12 +452,17 @@
 			return $from_info["dirname"];
 		}
 		public function update() {
-			$this->content = preg_replace_callback("#url\(\s*[\"\']([a-zA-Z0-9_\/\-\.\s\/]+)[\"\']\s*\)#", array("self","makeCleanURL"), $this->content);
-			$this->content = preg_replace_callback("#url\(\s*([a-zA-Z0-9_\/\-\.\s\/]+)\s*\)#", array("self","makeCleanURL"), $this->content);
+			$this->content = preg_replace_callback("#url\(\s*[\"\']*([a-zA-Z0-9_:\/\-\.\s\/]+)[\"\']*\s*\)#", array("self","makeCleanURL"), $this->content);
+			//$this->content = preg_replace_callback("#url\(\s*([a-zA-Z0-9_\/\-\.\s\/]+)\s*\)#", array("self","makeCleanURL"), $this->content);
 			$this->content = preg_replace_callback("#src\s*\=\s*[\"\']([a-zA-Z0-9_\/\-\.\s\/]+)[\"\']#", array("self","makeCleanSRC"), $this->content);
 		}
 		public function makeCleanURL($input) {
-			copy($this->getDirname($this->filename)."/".$input[1],$this->copydir.md5($input[1]).".".$this->getExt($input[1]));
+			//debug("strpos -> ".$input[1], strpos($input[1], "://"));
+			if (strpos($input[1], "://") !== false) {
+				file_put_contents($this->copydir.md5($input[1]).".".$this->getExt($input[1]),file_get($input[1]));
+			} else {
+				copy($this->getDirname($this->filename)."/".$input[1],$this->copydir.md5($input[1]).".".$this->getExt($input[1]));
+			}
 			return "url('".$this->to.md5($input[1]).".".$this->getExt($input[1])."')";
 		}
 		public function makeCleanSRC($input) {
@@ -460,28 +502,32 @@
 	}
 	
 	function copy_remote($from, $to, $wt="w") {
-		// get the args
-		$url = parse_url($from);
-		parse_str($url["query"], $__qs);
-		$u = explode("?",$from);
-		
-		$newurl = $u[0];
-		
-		$newurl = str_replace(" ","%20",$newurl);
-		
-		$fp 	= fopen($to, $wt);
-		
-		$ch 	= curl_init($newurl);
-		curl_setopt($ch, CURLOPT_FILE, $fp);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_HEADER, false);
-		curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, count($__qs));
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $__qs);
-		$data 	= curl_exec($ch);
-		
-		curl_close($ch);
-		fclose($fp);
+		if (strpos($from,"://")===false) {
+			copy($from, $to);
+		} else {
+			// get the args
+			$url = parse_url($from);
+			parse_str($url["query"], $__qs);
+			$u = explode("?",$from);
+			
+			$newurl = $u[0];
+			
+			$newurl = str_replace(" ","%20",$newurl);
+			
+			$fp 	= fopen($to, $wt);
+			
+			$ch 	= curl_init($newurl);
+			curl_setopt($ch, CURLOPT_FILE, $fp);
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+			curl_setopt($ch, CURLOPT_HEADER, false);
+			curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POST, count($__qs));
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $__qs);
+			$data 	= curl_exec($ch);
+			
+			curl_close($ch);
+			fclose($fp);
+		}
 	}
 	
 	
@@ -595,7 +641,7 @@
 		$time			= time();
 		$tempPath 		= 'misc/temp/store/'.$time."/";
 		$tempFilename 	= $tempPath."temp.app";
-		mkdir($tempPath);
+		makePath($tempPath);
 		
 		copy_remote($source, $tempFilename, "wb");
 		
@@ -656,12 +702,27 @@
 	function system_saveConf() {
 		global $_CONF;
 		$confFile = "core/compiled/php/conf.php";
+		// reset theme swap
+		if (isset($_CONF["original_template"])) {
+			$_CONF["template"] 			= $_CONF["original_template"];
+			$_CONF["original_template"] = false;
+			$tpl_swap = true;
+		}
 		file_put_contents($confFile,"<?php\n\t\$_CONF=".array_to_phpArray($_CONF).";\n?>");
+		if ($tpl_swap) {
+			$_CONF["original_template"] = $_CONF["template"];
+			$_CONF["template"] 			= $_CONF["admtemplate"];
+		}
 	}
 	
 	function system_activateTheme($name) {
 		global $_CONF;
 		$_CONF["template"] = $name;
+		system_saveConf();
+	}
+	function system_activateAdminTheme($name) {
+		global $_CONF;
+		$_CONF["admtemplate"] = $name;
 		system_saveConf();
 	}
 	
@@ -802,7 +863,7 @@
 	
 	
 	function initAdmin($options) {
-		
+		global $_CONF;
 		if (!$_SESSION["admin"] && !isset($options["islogin"])) {
 			location("site-admin/login");
 		}
@@ -831,15 +892,45 @@
 		foreach ($themes_dir as $themedir) {
 			$fileappid 	= "templates/".$themedir."/theme.id";
 			$fileadmin 	= "templates/".$themedir."/admin.conf";
-			if (file_exists($fileappid) && file_exists($fileadmin)) {
+			if (file_exists($fileappid)) {
 				$themeid 		= json_decode(file_get($fileappid), true);
-				$themeadmin 	= json_decode(file_get($fileadmin), true);
+				if ($themeid["admintpl"]) {
+					continue;
+				}
 				$themes[$themeid["name"]] = array(
 					"id"	=> $themedir,
-					"info"	=> $themeid,
-					"admin"	=> $themeadmin,
-					"pages"	=> count($themeadmin)
+					"info"	=> $themeid
 				);
+				if (file_exists($fileadmin)) {
+					$themeadmin 	= json_decode(file_get($fileadmin), true);
+					$themes[$themeid["name"]]["admin"]	= $themeadmin;
+					$themes[$themeid["name"]]["pages"]	= count($themeadmin);
+				}
+				
+			}
+		}
+		
+		// list admin themes
+		$admthemes 		= array();
+		$admthemes_dir 	= getDirAsArray("templates", array("..","."));
+		foreach ($admthemes_dir as $themedir) {
+			$fileappid 	= "templates/".$themedir."/theme.id";
+			$fileadmin 	= "templates/".$themedir."/admin.conf";
+			if (file_exists($fileappid)) {
+				$themeid 		= json_decode(file_get($fileappid), true);
+				if (!$themeid["admintpl"]) {
+					continue;
+				}
+				$admthemes[$themeid["name"]] = array(
+					"id"	=> $themedir,
+					"info"	=> $themeid
+				);
+				if (file_exists($fileadmin)) {
+					$themeadmin 	= json_decode(file_get($fileadmin), true);
+					$admthemes[$themeid["name"]]["admin"]	= $themeadmin;
+					$admthemes[$themeid["name"]]["pages"]	= count($themeadmin);
+				}
+				
 			}
 		}
 		
@@ -885,32 +976,67 @@
 		
 		// correct icon path
 		foreach ($apps as $idx => $app) {
+			if (isset($apps[$idx]["info"]["icon"])) {
+				$apps[$idx]["info"]["icon"] = "apps/".$apps[$idx]["id"]."/".$apps[$idx]["info"]["icon"];
+			} else {
+				$apps[$idx]["info"]["icon"] = "system/misc/defaulticon.png";
+			}
 			foreach ($app["admin"] as $idx2 => $page) {
 				$apps[$idx]["admin"][$idx2]["icon"] = "apps/".$apps[$idx]["id"]."/admin/".$apps[$idx]["admin"][$idx2]["icon"];
 			}
 		}
 		foreach ($themes as $idx => $theme) {
+			if (isset($themes[$idx]["info"]["icon"])) {
+				$themes[$idx]["info"]["icon"] = "templates/".$themes[$idx]["id"]."/".$themes[$idx]["info"]["icon"];
+			} else {
+				$themes[$idx]["info"]["icon"] = "system/misc/defaulticon.png";
+			}
 			foreach ($theme["admin"] as $idx2 => $page) {
 				$themes[$idx]["admin"][$idx2]["icon"] = "templates/".$themes[$idx]["id"]."/admin/".$themes[$idx]["admin"][$idx2]["icon"];
 			}
 		}
+		foreach ($admthemes as $idx => $theme) {
+			if (isset($admthemes[$idx]["info"]["icon"])) {
+				$admthemes[$idx]["info"]["icon"] = "templates/".$admthemes[$idx]["id"]."/".$admthemes[$idx]["info"]["icon"];
+			} else {
+				$admthemes[$idx]["info"]["icon"] = "system/misc/defaulticon.png";
+			}
+			foreach ($theme["admin"] as $idx2 => $page) {
+				$admthemes[$idx]["admin"][$idx2]["icon"] = "templates/".$admthemes[$idx]["id"]."/admin/".$admthemes[$idx]["admin"][$idx2]["icon"];
+			}
+		}
 		foreach ($libs as $idx => $lib) {
+			if (isset($libs[$idx]["info"]["icon"])) {
+				$libs[$idx]["info"]["icon"] = "system/libs/serverside/".$libs[$idx]["id"]."/".$libs[$idx]["info"]["icon"];
+			} else {
+				$libs[$idx]["info"]["icon"] = "system/misc/defaulticon.png";
+			}
 			foreach ($lib["admin"] as $idx2 => $page) {
 				$libs[$idx]["admin"][$idx2]["icon"] = "system/libs/serverside/".$libs[$idx]["id"]."/admin/".$libs[$idx]["admin"][$idx2]["icon"];
 			}
 		}
 		foreach ($clibs as $idx => $lib) {
+			if (isset($clibs[$idx]["info"]["icon"])) {
+				$clibs[$idx]["info"]["icon"] = "system/libs/clientside/".$clibs[$idx]["id"]."/".$clibs[$idx]["info"]["icon"];
+			} else {
+				$clibs[$idx]["info"]["icon"] = "system/misc/defaulticon.png";
+			}
 			foreach ($lib["admin"] as $idx2 => $page) {
-				$clibs[$idx]["admin"][$idx2]["icon"] = "system/libs/serverside/".$clibs[$idx]["id"]."/admin/".$clibs[$idx]["admin"][$idx2]["icon"];
+				$clibs[$idx]["admin"][$idx2]["icon"] = "system/libs/clientside/".$clibs[$idx]["id"]."/admin/".$clibs[$idx]["admin"][$idx2]["icon"];
 			}
 		}
 		
 		$_GET["__shared__"]["admin"] = array(
 			"apps" 		=> $apps,
 			"themes" 	=> $themes,
+			"admthemes" 	=> $admthemes,
 			"libs" 		=> $libs,
 			"clibs" 	=> $clibs
 		);
+		
+		// swpat the themes
+		$_CONF["original_template"] = $_CONF["template"];
+		$_CONF["template"]			= $_CONF["admtemplate"];
 		//debug("admin", $_GET["__shared__"]["admin"]);
 	}
 	
@@ -963,6 +1089,21 @@
 		saveVars();
 	}
 	
+	
+	function system_getPages() {
+		$pages 		= array();
+		$apps_dir 	= getDirAsArray("apps", array("..","."));
+		foreach ($apps_dir as $appdir) {
+			$fileappid 	= "apps/".$appdir."/app.id";
+			if (file_exists($fileappid)) {
+				$appid 		= json_decode(file_get($fileappid), true);
+				foreach ($appid["pages"] as $pageData) {
+					array_push($pages, $pageData);
+				}
+			}
+		}
+		return $pages;
+	}
 	
 	
 	

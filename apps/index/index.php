@@ -1,7 +1,7 @@
 <?php
 	$p = params();
 	
-	tpl_setPageTitle("test");
+	tpl_setPageTitle("Homepage");
 	
 	render(array(
 		"require"	=> array(),

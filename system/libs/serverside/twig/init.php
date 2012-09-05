@@ -22,11 +22,21 @@
 		if (!isset($options["data"])) {
 			$options["data"] = array();
 		}
+		foreach ($options["exclude"] as $excludeName) {
+			foreach ($options["require"] as $req_index => $requireName) {
+				if ($requireName == $excludeName) {
+					array_splice($options["require"], $req_index, 1);
+				}
+			}
+		}
+		
 		$options["data"]["conf"]	= $_CONF;
 		$options["data"]["shared"]	= $_GET["__shared__"];
 		
+		//debug("options", $options);
+		
 		if (isset($options["template"])) {
-			$options["data"]["shared"] = $_GET["__shared__"];
+			
 			$options["return"] = true; // force return so we can include in the main template
 			return __render(array(
 				"dir"		=> "templates/",

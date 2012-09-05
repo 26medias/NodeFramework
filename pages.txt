@@ -1,0 +1,13 @@
+[x]	Homepage
+[x]	About
+[x]	Twitter Feed
+[ ]	Contact
+[x]	Find Us
+[x]	Reviews
+[ ]	Coupons
+[x]	Events
+[x]	FAQ
+[x]	Menu
+[x]	News
+[x]	Portfolio
+[x]	Photo Gallery

@@ -1,0 +1,118 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		
+		<!-- Url de base -->
+		<base href="{$conf.settings.base}" />
+		
+		
+		<title>Configuration</title>
+		
+		<!-- JS et CSS à charger -->
+		{{ for type,include in includes }}
+			{{ for file in include }}
+				{{ if type == "js" }}
+					<script type="text/javascript" src="{$file}"></script>
+				{{ else }}
+					<link href="{$file}" rel="stylesheet" type="text/css" />
+				{{ endif }}
+			{{ endfor }}
+		{{ endfor }}
+		
+	</head>
+	<body class="admin">
+		<header>
+			<a href="site-admin"><img class="logo" src="templates/adm-base/images/logo.png" /></a>
+			<ul class="menu">
+				<li><a href="index">Back to the site</a></li>
+			</ul>
+		</header>
+		<div class="lineseparator"></div>
+		
+		<div class="admincontainer">
+			
+			{{ autoescape false }}
+			<div class="sidebar">
+				<img src="templates/adm-base/images/adm_apps.png" alt="" />
+				<div class="admseparator"></div>
+				<ul class="sidemenu">
+					{{ for app in shared.admin.apps }}
+					<li><a href="site-admin/apps/{$app.id}" style="background-image:url({$app.info.icon});">{$app.info.name}</a>
+						<ul class="sub">
+						{{ for pagename, page in app.admin }}
+							<li><a href="site-admin/apps/{$app.id}/{$page.page}" style="background-image:url({$page.icon});">{$pagename}</a></li>
+						{{ endfor }}
+						</ul></li>
+					{{ endfor }}
+				</ul>
+				
+				<img src="templates/adm-base/images/adm_themes.png" style="margin-top: 25px;" alt="" />
+				<div class="admseparator"></div>
+				<ul class="sidemenu">
+					{{ for theme in shared.admin.themes }}
+					<li><a href="site-admin/themes/{$theme.id}" style="background-image:url({$theme.info.icon});">{$theme.info.name}</a>
+						<ul class="sub">
+						{{ for pagename, page in theme.admin }}
+							<li><a href="site-admin/themes/{$theme.id}/{$page.page}" style="background-image:url({$page.icon});">{$pagename}</a></li>
+						{{ endfor }}
+						</ul></li>
+					{{ endfor }}
+					<li><hr /></li>
+					{{ for theme in shared.admin.admthemes }}
+					<li><a href="site-admin/themes/{$theme.id}" style="background-image:url({$theme.info.icon});">{$theme.info.name}</a>
+						<ul class="sub">
+						{{ for pagename, page in theme.admin }}
+							<li><a href="site-admin/themes/{$theme.id}/{$page.page}" style="background-image:url({$page.icon});">{$pagename}</a></li>
+						{{ endfor }}
+						</ul></li>
+					{{ endfor }}
+				</ul>
+				
+				<img src="templates/adm-base/images/adm_libs.png" style="margin-top: 25px;" alt="" />
+				<div class="admseparator"></div>
+				<ul class="sidemenu">
+					{{ for lib in shared.admin.libs }}
+					<li><a href="site-admin/libs/{$lib.id}" style="background-image:url({$lib.info.icon});">{{if lib.info.name}}{$lib.info.name}{{else}}{$lib.info.lib.id}{{endif}}</a>
+						<ul class="sub">
+						{{ for pagename, page in lib.admin }}
+							<li><a href="site-admin/libs/{$lib.id}/{$page.page}" style="background-image:url({$page.icon});">{$pagename}</a></li>
+						{{ endfor }}
+						</ul></li>
+					{{ endfor }}
+				</ul>
+				
+				<img src="templates/adm-base/images/adm_libs.png" style="margin-top: 25px;" alt="" />
+				<div class="admseparator"></div>
+				<ul class="sidemenu">
+					{{ for lib in shared.admin.clibs }}
+					<li><a href="site-admin/clibs/{$lib.id}" style="background-image:url({$lib.info.icon});">{{if lib.info.name}}{$lib.info.name}{{else}}{$lib.info.lib.id}{{endif}}</a>
+						<ul class="sub">
+						{{ for pagename, page in lib.admin }}
+							<li><a href="site-admin/clibs/{$lib.id}/{$page.page}" style="background-image:url({$page.icon});">{$pagename}</a></li>
+						{{ endfor }}
+						</ul></li>
+					{{ endfor }}
+				</ul>
+			</div>
+			{{ endautoescape }}
+			
+			<div class="main">
+				<!-- Contenu de la page -->
+				{{ autoescape false }}
+				{$output}
+				{{ endautoescape }}
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		<div class="clearfix"></div>
+		<div class="lineseparator"></div>
+		<footer>
+			Copyright &copy; 2012 Likiweb (beta)
+		</footer>
+	</body>
+</html>
+
+
+<script type="text/javascript">
+	
+</script>
