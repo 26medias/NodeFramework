@@ -874,17 +874,22 @@
 		foreach ($apps_dir as $appdir) {
 			$fileappid 	= "apps/".$appdir."/app.id";
 			$fileadmin 	= "apps/".$appdir."/admin.conf";
-			if (file_exists($fileappid) && file_exists($fileadmin)) {
+			if (file_exists($fileappid)) {
 				$appid 		= json_decode(file_get($fileappid), true);
-				$appadmin 	= json_decode(file_get($fileadmin), true);
 				$apps[$appid["name"]] = array(
 					"id"	=> $appdir,
-					"info"	=> $appid,
-					"admin"	=> $appadmin,
-					"pages"	=> count($appadmin)
+					"info"	=> $appid
 				);
+				
+				if (file_exists($fileadmin)) {
+					$appadmin 	= json_decode(file_get($fileadmin), true);
+					$apps[$appid["name"]]["admin"]	= $appadmin;
+					$apps[$appid["name"]]["pages"]	= count($appadmin);
+				}
 			}
 		}
+		
+		//debug("apps", $apps);
 		
 		// list themes
 		$themes 		= array();
@@ -940,7 +945,7 @@
 		foreach ($libs_dir as $libdir) {
 			$filelibid 	= "system/libs/serverside/".$libdir."/lib.conf";
 			$fileadmin 		= "system/libs/serverside/".$libdir."/admin.conf";
-			if (file_exists($fileappid) /*&& file_exists($fileadmin)*/) {
+			if (file_exists($filelibid)) {
 				$libid 		= json_decode(file_get($filelibid), true);
 				$libs[$libid["lib"]["id"]] = array(
 					"id"	=> $libdir,
@@ -954,13 +959,15 @@
 			}
 		}
 		
+		
+		
 		// list clientside Libs
 		$clibs 		= array();
 		$libs_dir 	= getDirAsArray("system/libs/clientside", array("..","."));
 		foreach ($libs_dir as $libdir) {
 			$filelibid 	= "system/libs/clientside/".$libdir."/lib.conf";
 			$fileadmin 		= "system/libs/clientside/".$libdir."/admin.conf";
-			if (file_exists($fileappid) /*&& file_exists($fileadmin)*/) {
+			if (file_exists($filelibid)) {
 				$libid 		= json_decode(file_get($filelibid), true);
 				$clibs[$libid["lib"]["id"]] = array(
 					"id"	=> $libdir,
