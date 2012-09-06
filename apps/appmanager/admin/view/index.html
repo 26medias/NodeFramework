@@ -7,6 +7,38 @@
 			</div>
 			<form action="site-admin/apps/appmanager/pack" target="frame" id="frm" method="post">
 				<div class="row">
+					<label for="name">Export</label>
+					<div class="form-right">
+						<select id="export_option">
+							<option value="download">Download Zip</option>
+							<option value="save">Save as new project</option>
+							<option value="update">Update project</option>
+						</select>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row" id="project_line">
+					<label for="name">Project</label>
+					<div class="form-right">
+						<select id="projects">
+							<option value="">Loading Project...</option>
+						</select>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row" id="types_line">
+					<label for="name">Type</label>
+					<div class="form-right">
+						<select id="types">
+							<option value="1">Application</option>
+							<option value="2">Theme</option>
+							<option value="4">Client-side Lib</option>
+							<option value="3">Server-side Lib</option>
+						</select>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
 					<label for="name">App Name</label>
 					<div class="form-right">
 						<input type="text" value="" name="name" id="name" />
@@ -67,8 +99,75 @@
 </div>
 
 <script type="text/javascript">
-	
+	var projects = {};
 	$(function() {
+		$("#project_line").hide();
+		$("#types_line").hide();
+		$("#projects").change(function() {
+			if ($(this).val() != "") {
+				var project = projects[$(this).val()];
+				$("#name").val(project.name);
+				$("#author").val(project.author.displayname);
+				if (project.files.count > 0) {
+					var lastversion = project.files.list[project.files.list.length-1].version;
+					var versionSplit = lastversion.split(".");
+					if (parseFloat(versionSplit[versionSplit.length-1]) == parseInt(versionSplit[versionSplit.length-1])) {
+						versionSplit[versionSplit.length-1] = parseInt(versionSplit[versionSplit.length-1])+1;
+						$("#version").val(versionSplit.join("."));
+					} else {
+						$("#version").val(lastversion);
+					}
+					
+					// get last file's meta
+					var metas = JSON.parse(project.files.list[project.files.list.length-1].metas);
+					$("#website").val(metas.website);
+					
+				} else {
+					$("#version").val("1.0.0");
+					$("#website").val("");
+				}
+				$("#email").val(project.author.email);
+				
+			}
+		});
+		$("#export_option").change(function() {
+			if ($(this).val() == "update") {
+				// Display Project list
+				$("#project_line").slideDown();
+				$("#types_line").slideUp();
+				
+				// List projects
+				$.ajax({
+					url: 		"{$shared.vars.appstore.api}",
+					dataType:	"json",
+					type:		"POST",
+					data:		{
+						email:		"{$shared.vars.appstore.email}",
+						password:	"{$shared.vars.appstore.password}",
+						call:		"listprojects"
+					},
+					success: 	function(data){
+						if (data.apps.count > 0) {
+							$("#projects").empty();
+							$("#projects").append('<option value="">Select Project</option>');
+							for (var i=0;i<data.apps.list.length;i++) {
+								$("#projects").append('<option value="'+i+'">['+data.apps.list[i].type.name+'] '+data.apps.list[i].name+'</option>');
+							}
+							projects = data.apps.list;
+						} else {
+							alert(data.message);
+						}
+					}
+				});
+			} else if ($(this).val() == "save") {
+				$("#project_line").slideUp();
+				$("#types_line").slideDown();
+			} else {
+				$("#project_line").slideUp();
+				$("#types_line").slideUp();
+			}
+		});
+		
 		$("#rootnode").tree({
 			root: 	".",
 			srv:	"site-admin/apps/appmanager/ls"
@@ -77,35 +176,120 @@
 		$("#btn-submit").click(function(e) {
 			e.stopImmediatePropagation();
 			e.preventDefault();
-			$("#rootnode").tree("export",{
-				callback: function(data) {
-					$("#export").val(JSON.stringify(data));
-					
-					$.ajax({
-						url: 		"{$conf.settings.base}site-admin/apps/appmanager/pack",
-						dataType:	"text",
-						type:		"POST",
-						data:		{
-							base:		"./",
-							export:		$("#export").val(),
-							name:		$("#name").val(),
-							author:		$("#author").val(),
-							version:	$("#version").val(),
-							email:		$("#email").val(),
-							website:	$("#website").val()
-						},
-						success: 	function(data){
-							var iframe = $.create("iframe", $(".frames"));
-							iframe.css({
-								width: 	0,
-								height: 0,
-								border: 0
-							});
-							iframe.attr('src', data);
-						}
-					});
-				}
-			});
+			if ($("#export_option").val() == "update") {
+				// send pack to the store
+				$("#rootnode").tree("export",{
+					callback: function(data) {
+						$("#export").val(JSON.stringify(data));
+						
+						$.ajax({
+							url: 		"{$conf.settings.base}site-admin/apps/appmanager/pack",
+							dataType:	"text",
+							type:		"POST",
+							data:		{
+								base:		"./",
+								export:		$("#export").val(),
+								name:		$("#name").val(),
+								author:		$("#author").val(),
+								version:	$("#version").val(),
+								email:		$("#email").val(),
+								website:	$("#website").val()
+							},
+							success: 	function(data2){
+								$.ajax({
+									url: 		"{$conf.settings.base}site-admin/apps/appmanager/app_update",
+									dataType:	"text",
+									type:		"POST",
+									data:		{
+										pack: 			data2,
+										project:		projects[$("#projects").val()].id
+									},
+									success: 	function(data){
+										if (data.response == "success") {
+											alert("Project #"+data.token+" Updated");
+										} else {
+											alert(data.message);
+										}
+									}
+								});
+							}
+						});
+					}
+				});
+			} else if ($("#export_option").val() == "save") {
+				// create project and send pack to the store
+				$("#rootnode").tree("export",{
+					callback: function(data) {
+						$("#export").val(JSON.stringify(data));
+						
+						$.ajax({
+							url: 		"{$conf.settings.base}site-admin/apps/appmanager/pack",
+							dataType:	"text",
+							type:		"POST",
+							data:		{
+								base:		"./",
+								export:		$("#export").val(),
+								name:		$("#name").val(),
+								author:		$("#author").val(),
+								version:	$("#version").val(),
+								email:		$("#email").val(),
+								website:	$("#website").val()
+							},
+							success: 	function(data2){
+								$.ajax({
+									url: 		"{$conf.settings.base}site-admin/apps/appmanager/app_save",
+									dataType:	"text",
+									type:		"POST",
+									data:		{
+										pack: 			data2,
+										type:			$("#types").val(),
+										name:			$("#name").val(),
+									},
+									success: 	function(data){
+										if (data.response == "success") {
+											alert("Project #"+data.token+" Updated");
+										} else {
+											alert(data.message);
+										}
+									}
+								});
+							}
+						});
+					}
+				});
+			} else {
+				// download the pack
+				$("#rootnode").tree("export",{
+					callback: function(data) {
+						$("#export").val(JSON.stringify(data));
+						
+						$.ajax({
+							url: 		"{$conf.settings.base}site-admin/apps/appmanager/pack",
+							dataType:	"text",
+							type:		"POST",
+							data:		{
+								base:		"./",
+								export:		$("#export").val(),
+								name:		$("#name").val(),
+								author:		$("#author").val(),
+								version:	$("#version").val(),
+								email:		$("#email").val(),
+								website:	$("#website").val()
+							},
+							success: 	function(data){
+								var iframe = $.create("iframe", $(".frames"));
+								iframe.css({
+									width: 	0,
+									height: 0,
+									border: 0
+								});
+								iframe.attr('src', data);
+							}
+						});
+					}
+				});
+			}
+
 		});
 		
 	});

@@ -1,0 +1,69 @@
+
+<div class="container_12">
+	<div class="grid_12">
+		<div class="box">
+			<div class="head">
+				App Store Conf
+			</div>
+			<form action="site-admin/apps/appmanager/appstore" id="frm" method="post">
+				<input type="hidden" name="updated" value="true" />
+				<div class="row">
+					<label for="name">Email</label>
+					<div class="form-right">
+						<input type="text" value="{$shared.vars.appstore.email}" name="email" id="email" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="author">Password</label>
+					<div class="form-right">
+						<input type="password" value="{$shared.vars.appstore.password}" name="password" id="password" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="name">API URL</label>
+					<div class="form-right">
+						<input type="text" value="{$shared.vars.appstore.api}" name="api" id="api" />
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				
+				<div class="row">
+					<button id="btn-test" class="cta">Test</button>
+					<input type="submit" value="Valider" id="btn-submit" class="cta" style="float: right" />
+					<div class="clearfix"></div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+	$(function() {
+		$("#btn-test").click(function(e) {
+			e.stopImmediatePropagation();
+			e.preventDefault();
+			
+			$.ajax({
+				url: 		$("#api").val(),
+				dataType:	"json",
+				type:		"POST",
+				data:		{
+					email:		$("#email").val(),
+					password:	$("#password").val(),
+					call:		"ping"
+				},
+				success: 	function(data){
+					if (data.response == "pong") {
+						alert("Success");
+					} else {
+						alert(data.message);
+					}
+				}
+			});
+			
+		});
+	});
+</script>
