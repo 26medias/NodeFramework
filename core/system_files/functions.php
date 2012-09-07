@@ -717,7 +717,11 @@
 	
 	function system_activateTheme($name) {
 		global $_CONF;
-		$_CONF["template"] = $name;
+		if (isset($_CONF["original_template"]) && $_CONF["original_template"] != false && $_CONF["original_template"] != "") {
+			$_CONF["original_template"] = $name;
+		} else {
+			$_CONF["template"] = $name;
+		}
 		system_saveConf();
 	}
 	function system_activateAdminTheme($name) {
