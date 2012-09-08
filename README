@@ -1,44 +1,30 @@
-h1. Installation
-	*Décompressez dans votre repertoire web
-	*Connectez vous sur /worker/conf. Exemple si vous avez installez dans http://site.com/, alors connectez vous sur http://site.com/worker/conf
-	*En haut, "Base url" -> URL du site (exemple: http://site;com/). N'oubliez pas le "/" final!
-	* Cochez la lib "Twig" (Moteur de template)
-	*Cochez la lib "Templates" (template helpers)
-	*Validez (bouton "Update")
-	*Votre Node est installé.
+### NodeFramework (3.0)
 
-h1. Templates
-Le template se trouve dans /templates/.
-Les fichiers CSS et JS du template sont une librairie Clientside.
-Ils doivent donc etre packagés comme une librairie et se situer dans le dossier /system/libs/clentside/
-Le nom de la librairie doit etre "template-[nom du template]". Exemple, si votre template s'appel "Helloworld", alors la librairie doit etre nommé "template-Helloworld".
-Si cette convention de nommage n'est pas respectée, cette librairie ne sera pas chargée automatiquement.
+NodeFramework is a flexible PHP framework that was developed with two goals in mind: Increasing the productivity of the developers, while being as simple to use as possible.
+The learning curve is highly reduced, with developers being able to start developing on the framework in just 2 hours of training.
 
-h2. Class CSS requises dans les templates:
-	*Form*
-		form>div.row>label+div.form-right
-	
-	*Buttons*
-		*.button
-		*.button-cta
-		*.big
-		*.small
-		
-	*Tables*
-		*table
-		*table.data
-	
-	*Messages*
-		*div.message.warn>p
-		*div.message.error>p
-		*div.message.confirm>p
-		*div.message.info>p
-	
-	*Pagination*
-		*ul.pagination>li>a
-		*ul.pagination>li.prev>a
-		*ul.pagination>li.next>a
-		*ul.pagination>li.active>a
-	
-	*Content Box*
-		*div.box>div.head+div.body
+### Overview
+* Pages are grouped in "Applications".
+* PHP functions are grouped in "Server-Side Libraries"
+* JS and CSS files are grouped in "Client-Side Libraries", with dependency management, minification, and caching.
+* Themes are available, and managed by Twig (Symfony's template engine). The template engine is loaded as a library, and can be replaced or switch with ease.
+* NodeFramework's configuration is automatically rewritten in native PHP when changed.
+* Required server-side libraries are automatically "hard wired" as PHP includes, without any loop or condition.
+* Client-side libraries (JS and CSS files) are delivered on demand via a dedicated method which manage the dependencies, minification, concatenation (to deliver a single JS and a single CSS file) and cache the resulting tree and files for ultra-fast delivery on the next request.
+* Each application, theme and library has an "ID file", a file that give its unique name, version, metas (author, email, description, ...), dependencies, ...
+* Applications, themes and libraries are automatically detected by the framework. Copy-paste the folder in your project and you're done.
+
+### For developers
+* NodeFramework does not impose a coding style. You are free to use MVC is you wish, but you're also free to code in PHP inline (however I strongly advise against it). I personally use the CV model (Controller-View; I skip the Model layer on most projects)
+* Reuse your code: Copy-paste the folder of your libraries, themes or application from one project to another. No additional line of code required, they will be recognized automatically by the framework.
+* Backend: The framework has a built-in backend, protected, where you can manage the framework's conf, but where you can also access independent admin panels: Each application, Theme and library can have its own administration interface, with more than one interface. Admin interfaces are a special kind of application.
+* Default .htaccess handles basic URL-REWRITING and optimizes the HTTP headers for better caching and optimized delivery (.htaccess based on the HTML5 Boilerplate Project by Paul Irish - http://www.html5boilerplate.com/)
+
+### Install
+* Download and uncompress on your web server
+* Call /install
+* Default credentials: admin:admin
+
+### Requirements:
+* PHP 5.2
+* mod_rewrite
