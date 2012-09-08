@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Nodeframework : A modular, easy-to-use PHP framework, allowing plug'n'play applications, libs and themes." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Nodeframework</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/26medias/NodeFramework">View on GitHub</a>
+
+          <h1 id="project_title">Nodeframework</h1>
+          <h2 id="project_tagline">A modular, easy-to-use PHP framework, allowing plug'n'play applications, libs and themes.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/26medias/NodeFramework/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/26medias/NodeFramework/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>NodeFramework (3.0)</h3>
+
+<p>NodeFramework is a flexible PHP framework that was developed with two goals in mind: Increasing the productivity of the developers, while being as simple to use as possible.
+The learning curve is highly reduced, with developers being able to start developing on the framework in just 2 hours of training.</p>
+
+<h3>Overview</h3>
+
+<ul>
+<li>Pages are grouped in "Applications".</li>
+<li>PHP functions are grouped in "Server-Side Libraries"</li>
+<li>JS and CSS files are grouped in "Client-Side Libraries", with dependency management, minification, and caching.</li>
+<li>Themes are available, and managed by Twig (Symfony's template engine). The template engine is loaded as a library, and can be replaced or switch with ease.</li>
+<li>NodeFramework's configuration is automatically rewritten in native PHP when changed.</li>
+<li>Required server-side libraries are automatically "hard wired" as PHP includes, without any loop or condition.</li>
+<li>Client-side libraries (JS and CSS files) are delivered on demand via a dedicated method which manage the dependencies, minification, concatenation (to deliver a single JS and a single CSS file) and cache the resulting tree and files for ultra-fast delivery on the next request.</li>
+<li>Each application, theme and library has an "ID file", a file that give its unique name, version, metas (author, email, description, ...), dependencies, ...</li>
+<li>Applications, themes and libraries are automatically detected by the framework. Copy-paste the folder in your project and you're done.</li>
+</ul><h3>For developers</h3>
+
+<ul>
+<li>NodeFramework does not impose a coding style. You are free to use MVC is you wish, but you're also free to code in PHP inline (however I strongly advise against it). I personally use the CV model (Controller-View; I skip the Model layer on most projects)</li>
+<li>Reuse your code: Copy-paste the folder of your libraries, themes or application from one project to another. No additional line of code required, they will be recognized automatically by the framework.</li>
+<li>Backend: The framework has a built-in backend, protected, where you can manage the framework's conf, but where you can also access independent admin panels: Each application, Theme and library can have its own administration interface, with more than one interface. Admin interfaces are a special kind of application.</li>
+<li>Default .htaccess handles basic URL-REWRITING and optimizes the HTTP headers for better caching and optimized delivery (.htaccess based on the HTML5 Boilerplate Project by Paul Irish - <a href="http://www.html5boilerplate.com/">http://www.html5boilerplate.com/</a>)</li>
+</ul><h3>Install</h3>
+
+<ul>
+<li>Download and uncompress on your web server</li>
+<li>Call /install</li>
+<li>Default credentials: admin:admin</li>
+</ul><h3>Requirements:</h3>
+
+<ul>
+<li>PHP 5.2</li>
+<li>mod_rewrite</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Nodeframework maintained by <a href="https://github.com/26medias">26medias</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
