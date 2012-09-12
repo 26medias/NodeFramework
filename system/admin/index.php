@@ -12,6 +12,7 @@
 		}
 	}
 	
+	
 	if (isset($p["theme-id"])) {
 		system_activateTheme($p["theme-id"]);
 	}

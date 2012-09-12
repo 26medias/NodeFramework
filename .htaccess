@@ -482,6 +482,7 @@ AddCharset utf-8 .html .css .js .xml .json .rss
 	RewriteRule ^([\/])$  											index.php?mode=web&app=index&module=index [L]
 	RewriteRule ^(.*)\.conf$  										core/default/error/index.php?error=403 [L]
 	RewriteRule ^install([\/]?)$  									install.php [L]
+	RewriteRule ^install/([a-zA-Z0-9_-]+)([\/]?)$  					install.php?secret=$1 [L]
 	
 	# admin
 	RewriteRule ^site-admin([\/]?)$  											index.php?mode=admin&admcore=true&module=index [L]
