@@ -3,13 +3,26 @@
 		global $_GET, $_POST;
 		$output = array();
 		foreach ($_GET["__qs__"] as $key => $value) {
-			$output[$key] = stripslashes($value);
+			if (is_array($value)) {
+				$output[$key] = $value;
+			} else {
+				$output[$key] = stripslashes($value);
+			}
+			//
 		}
 		foreach ($_POST as $key => $value) {
-			$output[$key] = stripslashes($value);
+			if (is_array($value)) {
+				$output[$key] = $value;
+			} else {
+				$output[$key] = stripslashes($value);
+			}
 		}
 		foreach ($_GET as $key => $value) {
-			$output[$key] = stripslashes($value);
+			if (is_array($value)) {
+				$output[$key] = $value;
+			} else {
+				$output[$key] = stripslashes($value);
+			}
 		}
 		return $output;
 	}
@@ -36,7 +49,13 @@
 		}
 	}
 	
-	
+	function getShared($label=false) {
+		if (!$label) {
+			return $_GET["__shared__"];
+		} else {
+			return $_GET["__shared__"][$label];
+		}
+	}
 	function share() {
 		$_argv = func_get_args();
 		$_argc = func_num_args();
@@ -209,7 +228,7 @@
 	}
 	
 	
-	function file_get($url) {
+	function file_get($url,$data=array()) {
 		if (strpos($url,"://")===false) {
 			return file_get_contents($url);
 		} else {
@@ -217,6 +236,9 @@
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			if (count($data) > 0) {
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+			}
 			$output = curl_exec($ch);
 			curl_close($ch);
 			return $output;
@@ -699,6 +721,23 @@
 		}
 	}
 	
+	function system_chmod_dir($path, $chmod) {
+		
+		$files = getFileAsArray($path);
+		
+		// erase the compiled files
+		foreach ($files as $file) {
+			chmod($path.$file, $chmod);
+		}
+		
+		// erase the images
+		$dirs = getDirAsArray($dir, array(".",".."));
+		foreach ($dirs as $dir) {
+			chmod($path."/".$dir, $chmod);
+			system_chmod_dir($path."/".$dir, $chmod);
+		}
+	}
+	
 	function system_saveConf() {
 		global $_CONF;
 		$confFile = "core/compiled/php/conf.php";
@@ -1051,9 +1090,14 @@
 		//debug("admin", $_GET["__shared__"]["admin"]);
 	}
 	
-	function getVars() {
+	function getVars($label=false) {
 		global $_CONF;
-		return $_CONF["vars"];
+		if (!$label) {
+			return $_CONF["vars"];
+		} else {
+			return $_CONF["vars"][$label];
+		}
+		
 	}
 	
 	function saveVars() {

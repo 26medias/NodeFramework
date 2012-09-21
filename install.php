@@ -21,7 +21,14 @@
 		include("system/admin/view/credentials.html");
 		//location("site-admin");
 	} else {
-	
+		
+		// make path rewritable
+		$chmodpath = array("core/compiled","system/conf");
+		
+		foreach ($chmodpath as $path) {
+			system_chmod_dir($path, 0777);
+		}
+		
 		if (file_exists($file_sid)) {
 			$raw_file_sid					= file_get($file_sid);
 			$_SID 							= json_decode($raw_file_sid,true);
@@ -33,12 +40,21 @@
 	
 		// set the base path
 		$paths = explode("/",$_SERVER["REQUEST_URI"]);
+		//debug("_SERVER",$_SERVER);
+		//debug("paths",$paths);
 		$realpath = array();
 		for ($i=1;$i<count($paths)-1;$i++) {
 			array_push($realpath, $paths[$i]);
 		}
+		//debug("realpath",$realpath);
 		$realpath = implode("/", $realpath);
-		$base = "http://".$_SERVER["SERVER_NAME"]."/".$realpath."/";
+		//debug("realpath",$realpath);
+		if ($realpath != "") {
+			$base = "http://".$_SERVER["SERVER_NAME"]."/".$realpath."/";
+		} else {
+			$base = "http://".$_SERVER["SERVER_NAME"]."/";
+		}
+		//debug("base",$base);
 		if (!isset($_CONF["settings"])) {
 			$_CONF["settings"] = array();
 		}

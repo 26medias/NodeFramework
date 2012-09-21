@@ -36,10 +36,74 @@
 				</div>
 			</form>
 		</div>
+		
+		<div class="box">
+			<div class="head">
+				Site registration
+			</div>
+			<form>
+				<input type="hidden" name="updated" value="true" />
+				<div class="row">
+					<label for="">SID</label>
+					<div class="form-right">
+						{{ if sid != 0 }}{$sid}{{ else }}Site non enregistr&eacute;{{ endif }}
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="">Token</label>
+					<div class="form-right">
+						{$token}
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<label for="">Secret</label>
+					<div class="form-right">
+						{$secret}
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				
+				
+				{{ if sid == 0 }}
+				<div class="row">
+					<button id="btn-register" class="cta" style="float:right;">Enregistrer</button>
+					<div class="clearfix"></div>
+				</div>
+				{{ endif }}
+			</form>
+		</div>
 	</div>
 </div>
 
 <script type="text/javascript">
+	
+	function apiCall(apiurl, email, password, apimethod, data, callback) {
+		if (apiurl && apiurl != "") {
+			$.ajax({
+				url: 		"{$conf.settings.base}site-admin/apps/appmanager/proxy",
+				dataType:	"json",
+				type:		"POST",
+				data:		{
+					url:		apiurl,
+					email:		email,
+					password:	password,
+					call:		apimethod,
+					data:		data
+				},
+				success: 	function(data){
+					if (data.response) {
+						callback(data);
+					} else {
+						alert(data.message);
+					}
+				}
+			});
+		} else {
+			alert("Vous devez indiquer l'URL des API");
+		}
+	}
 	
 	$(function() {
 		$("#btn-test").click(function(e) {
@@ -63,6 +127,15 @@
 					}
 				}
 			});
+			
+		});
+		$("#btn-register").click(function(e) {
+			e.stopImmediatePropagation();
+			e.preventDefault();
+			
+			apiCall($("#api").val(), $("#email").val(), $("#password").val(), "register", {url: '{$conf.settings.base}', secret:'{$secret}',token:'{$token}'}, function(data) {
+				console.log("data");
+			})
 			
 		});
 	});
